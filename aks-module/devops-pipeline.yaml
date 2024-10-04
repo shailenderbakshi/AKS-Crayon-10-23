@@ -8,7 +8,7 @@ pool:
 
 variables:
   - name: 'azureSubscription'
-    value: 'Shail-Conn'  # This should match your Azure DevOps service connection
+    value: 'Shail-Conn'  # This should be your service connection name
 
 steps:
 # Step 1: Install Terraform
@@ -16,16 +16,18 @@ steps:
   inputs:
     terraformVersion: 'latest'
 
-# Step 2: Terraform Initialization
+# Step 2: Terraform Initialization with -reconfigure
 - task: TerraformTaskV2@2
   inputs:
     provider: 'azurerm'
     command: 'init'
-    backendServiceArm: 'Shail-Conn'  # Replace this with your service connection name
+    backendServiceArm: 'Shail-Conn'  # Ensure this matches your Azure DevOps service connection name
     backendAzureRmResourceGroupName: 'myStorageResourceGroup'
     backendAzureRmStorageAccountName: 'mystorageaccount'
     backendAzureRmContainerName: 'tfstate'
     backendAzureRmKey: 'aks-cluster/terraform.tfstate'
+    commandOptions: '-reconfigure'  # This will reinitialize the backend
+    workingDirectory: '$(System.DefaultWorkingDirectory)/aks-module'  # Set working directory to the `aks-module` folder
 
 # Step 3: Terraform Plan using tfvars file
 - task: TerraformTaskV2@2
