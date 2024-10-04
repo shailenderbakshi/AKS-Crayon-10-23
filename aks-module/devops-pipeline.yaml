@@ -32,7 +32,7 @@ steps:
   inputs:
     provider: 'azurerm'
     command: 'plan'
-    workingDirectory: '$(System.DefaultWorkingDirectory)'  # Adjust path if necessary
+    workingDirectory: '$(System.DefaultWorkingDirectory)/aks-module'  # Adjust path if necessary
     commandOptions: '-var-file="terraform.tfvars"'
 
 # Step 4: Terraform Apply using tfvars file
@@ -40,5 +40,5 @@ steps:
   inputs:
     provider: 'azurerm'
     command: 'apply'
-    workingDirectory: '$(System.DefaultWorkingDirectory)'  # Adjust path if necessary
+    workingDirectory: '$(System.DefaultWorkingDirectory)/aks-module'  # Adjust path if necessary
     commandOptions: '-var-file="terraform.tfvars" -auto-approve'
