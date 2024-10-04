@@ -8,7 +8,7 @@ pool:
 
 variables:
   - name: 'azureSubscription'
-    value: 'Shail-Conn'  # This should match your Azure DevOps service connection name
+    value: 'Shail-Conn'  # Ensure this matches your Azure service connection name
 
 steps:
 # Step 1: Install Terraform
@@ -26,9 +26,9 @@ steps:
     backendAzureRmStorageAccountName: 'mystorageaccount'
     backendAzureRmContainerName: 'tfstate'
     backendAzureRmKey: 'aks-cluster/terraform.tfstate'
-    commandOptions: '-reconfigure'  # This will reinitialize the backend
-    workingDirectory: '$(System.DefaultWorkingDirectory)/aks-module'  # Set working directory to the `aks-module` folder
-    environmentServiceNameAzureRM: 'Shail-Conn'  # Azure Service Connection
+    commandOptions: '-reconfigure'  # Reinitialize backend
+    workingDirectory: '$(System.DefaultWorkingDirectory)/aks-module'  # Set working directory to `aks-module`
+    azureSubscription: 'Shail-Conn'  # Correct parameter for service connection
 
 # Step 3: Terraform Plan using tfvars file
 - task: TerraformTaskV2@2
@@ -37,7 +37,7 @@ steps:
     command: 'plan'
     workingDirectory: '$(System.DefaultWorkingDirectory)/aks-module'  # Adjust path if necessary
     commandOptions: '-var-file="terraform.tfvars"'
-    environmentServiceNameAzureRM: 'Shail-Conn'  # Azure Service Connection
+    azureSubscription: 'Shail-Conn'  # Correct parameter for service connection
 
 # Step 4: Terraform Apply using tfvars file
 - task: TerraformTaskV2@2
@@ -46,4 +46,4 @@ steps:
     command: 'apply'
     workingDirectory: '$(System.DefaultWorkingDirectory)/aks-module'  # Adjust path if necessary
     commandOptions: '-var-file="terraform.tfvars" -auto-approve'
-    environmentServiceNameAzureRM: 'Shail-Conn'  # Azure Service Connection
+    azureSubscription: 'Shail-Conn'  # Correct parameter for service connection
