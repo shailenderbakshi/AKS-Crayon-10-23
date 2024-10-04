@@ -23,7 +23,7 @@ steps:
     command: 'init'
     backendServiceArm: 'Shail-Conn'  # Ensure this matches your Azure DevOps service connection name
     backendAzureRmResourceGroupName: 'myStorageResourceGroup'
-    backendAzureRmStorageAccountName: 'mystorageaccount'
+    backendAzureRmStorageAccountName: 'terracount02'
     backendAzureRmContainerName: 'tfstate'
     backendAzureRmKey: 'aks-cluster/terraform.tfstate'
     commandOptions: '-reconfigure'  # This will reinitialize the backend
