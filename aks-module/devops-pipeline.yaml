@@ -8,7 +8,7 @@ pool:
 
 variables:
   - name: 'azureSubscription'
-    value: 'your-azure-subscription'  # This should match your Azure DevOps service connection
+    value: 'Shail-Conn'  # This should match your Azure DevOps service connection
 
 steps:
 # Step 1: Install Terraform
@@ -21,7 +21,7 @@ steps:
   inputs:
     provider: 'azurerm'
     command: 'init'
-    backendServiceArm: 'AzureDevOpsServiceConnection'  # Replace this with your service connection name
+    backendServiceArm: 'Shail-Conn'  # Replace this with your service connection name
     backendAzureRmResourceGroupName: 'myStorageResourceGroup'
     backendAzureRmStorageAccountName: 'mystorageaccount'
     backendAzureRmContainerName: 'tfstate'
