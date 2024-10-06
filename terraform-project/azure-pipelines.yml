@@ -13,7 +13,7 @@ steps:
     terraformVersion: '1.5.0'  # Specify the version of Terraform you want to use
 
 # Step 2: Initialize Terraform with backend configuration
-- task: Terraform@3
+- task: TerraformTaskV2@2
   inputs:
     command: 'init'  # Initialize Terraform
     backendServiceArm: 'Shail-Conn'  # Azure service connection for authentication
@@ -24,7 +24,7 @@ steps:
     workingDirectory: $(System.DefaultWorkingDirectory)
 
 # Step 3: Run Terraform Plan
-- task: Terraform@3
+- task: TerraformTaskV2@2
   inputs:
     command: 'plan'  # Generate a Terraform execution plan
     workingDirectory: $(System.DefaultWorkingDirectory)
@@ -32,7 +32,7 @@ steps:
     commandOptions: '-var-file=env/dev.tfvars -out=tfplan'  # Correct reference to the tfvars under the 'env/' directory
 
 # Step 4: Apply Terraform changes
-- task: Terraform@3
+- task: TerraformTaskV2@2
   inputs:
     command: 'apply'  # Apply the Terraform plan
     workingDirectory: $(System.DefaultWorkingDirectory)
