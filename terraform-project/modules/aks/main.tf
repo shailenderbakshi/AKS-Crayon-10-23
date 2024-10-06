@@ -15,6 +15,11 @@ resource "azurerm_kubernetes_cluster" "aks" {
     type = "SystemAssigned"
   }
 
+  azure_active_directory_role_based_access_control {
+    enabled = true
+    admin_group_object_ids = [var.admin_group_object_id]
+  }
+
   network_profile {
     network_plugin    = "azure"
     network_policy    = "azure"
@@ -23,22 +28,12 @@ resource "azurerm_kubernetes_cluster" "aks" {
     docker_bridge_cidr = var.docker_bridge_cidr
   }
 
-  role_based_access_control {
-    enabled = true
-    azure_active_directory {
-      managed = true
-      admin_group_object_ids = [var.admin_group_object_id]
-    }
-  }
-
   addon_profile {
     oms_agent {
-      enabled = true
-      log_analytics_workspace_id = var.log_analytics_workspace_id
+      enabled                    = true
+      log_analytics_workspace_id  = var.log_analytics_workspace_id
     }
   }
 
   tags = var.tags
-
-  depends_on = [module.log_analytics]  # Ensure AKS waits for Log Analytics
 }
