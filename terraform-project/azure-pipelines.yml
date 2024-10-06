@@ -17,8 +17,8 @@ steps:
   inputs:
     command: 'init'  # Initialize Terraform
     backendServiceArm: 'Shail-Conn'  # Azure service connection for authentication
-    backendAzureRmResourceGroupName: 'my-tfstate-rg'  # Resource group for backend
-    backendAzureRmStorageAccountName: 'mystorageaccount'  # Storage account name
+    backendAzureRmResourceGroupName: 'myStorageResourceGroup'  # Resource group for backend
+    backendAzureRmStorageAccountName: 'terracount02'  # Storage account name
     backendAzureRmContainerName: 'tfstate'  # Container for state file
     backendAzureRmKey: 'terraform.tfstate'  # Name of the state file
     workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-project'  # Ensure this points to where your Terraform configs are
