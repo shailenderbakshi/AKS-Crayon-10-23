@@ -14,7 +14,7 @@ module "vnet" {
   vnet_name            = var.vnet_name
   vnet_address_space   = var.vnet_address_space
   location             = var.location
-  resource_group_name  = var.resource_group_name
+  resource_group_name  = module.rg_storage.resource_group_name  # Reference RG from rg_storage
   subnet_name          = var.subnet_name
   subnet_address_prefix = var.subnet_address_prefix
 }
@@ -25,7 +25,7 @@ module "log_analytics" {
 
   log_analytics_workspace_name = var.log_analytics_workspace_name
   location                     = var.location
-  resource_group_name          = var.resource_group_name
+  resource_group_name          = module.rg_storage.resource_group_name  # Reference RG from rg_storage
   sku                          = var.log_analytics_sku
   retention_in_days            = var.log_analytics_retention
   tags                         = var.tags
