@@ -7,9 +7,9 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  resourceGroupName: 'my-resource-group'  # Set your AKS resource group here
-  aksClusterName: 'my-aks-cluster'        # Set your AKS cluster name here
-  kubernetesNamespace: 'default'          # Set default namespace (optional)
+  resourceGroupName: 'my-resource-group'  # Your AKS resource group
+  aksClusterName: 'my-aks-cluster'        # Your AKS cluster name
+  kubernetesNamespace: 'default'          # Namespace for deployment
 
 steps:
 # Step 1: Install Terraform
@@ -49,21 +49,16 @@ steps:
   inputs:
     kubectlVersion: 'latest'
 
-# Step 6: Install kubelogin (required for AAD-enabled AKS clusters)
-- script: |
-    sudo az aks install-cli  # Install kubelogin via Azure CLI
-  displayName: 'Install kubelogin'
-
-# Step 7: Get AKS credentials directly after creation
+# Step 6: Get AKS admin credentials (bypasses AAD)
 - task: AzureCLI@2
   inputs:
     azureSubscription: 'Crayon-Conn'
     scriptType: bash
     scriptLocation: inlineScript
     inlineScript: |
-      az aks get-credentials --resource-group $(resourceGroupName) --name $(aksClusterName) --overwrite-existing
+      az aks get-credentials --resource-group $(resourceGroupName) --name $(aksClusterName) --admin --overwrite-existing
 
-# Step 8: Apply Kubernetes manifest using kubectl
+# Step 7: Apply Kubernetes manifest using kubectl
 - script: |
     kubectl apply -f terraform-project/manifests/nginx-deployment.yaml --namespace $(kubernetesNamespace)
   displayName: 'Deploy NGINX to AKS'
