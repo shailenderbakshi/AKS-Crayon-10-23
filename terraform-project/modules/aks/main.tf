@@ -34,11 +34,11 @@ resource "azurerm_kubernetes_cluster" "aks" {
   addon_profile {
     oms_agent {
       enabled = true
-      log_analytics_workspace_id = var.log_analytics_workspace_id  # Use the Log Analytics ID
+      log_analytics_workspace_id = var.log_analytics_workspace_id
     }
   }
 
   tags = var.tags
 
-  depends_on = [module.log_analytics]  # Ensure AKS waits for Log Analytics to finish
+  depends_on = [module.log_analytics]  # Ensure AKS waits for Log Analytics
 }
