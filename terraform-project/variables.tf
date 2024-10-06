@@ -106,3 +106,15 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "account_tier" {
+  description = "The account tier for the storage account"
+  type        = string
+  default     = "Standard"
+}
+
+variable "replication_type" {
+  description = "The replication type for the storage account (LRS, GRS, ZRS)"
+  type        = string
+  default     = "LRS"
+}
