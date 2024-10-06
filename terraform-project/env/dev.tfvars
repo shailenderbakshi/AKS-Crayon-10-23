@@ -29,7 +29,7 @@ dns_service_ip            = "10.0.0.10"
 docker_bridge_cidr        = "172.17.0.1/16"
 
 # Replace <YOUR_ADMIN_GROUP_OBJECT_ID> with the actual value
-admin_group_object_id     = "<YOUR_ADMIN_GROUP_OBJECT_ID>"
+admin_group_object_id     = "411c37d2-f168-4870-8900-acf689bfcfd5"
 
 # Log Analytics Workspace ID will be dynamically created
 # No need to set this manually; it will be passed from the Log Analytics module to AKS module.
