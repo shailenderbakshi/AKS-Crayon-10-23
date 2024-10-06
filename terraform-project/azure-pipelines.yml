@@ -1,40 +1,40 @@
 trigger:
   branches:
     include:
-      - main
+      - main  # This pipeline triggers on changes to the 'main' branch
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'ubuntu-latest'  # Using the latest Ubuntu image for the pipeline
 
 steps:
-# Install Terraform
+# Step 1: Install Terraform (if not installed)
 - task: TerraformInstaller@0
   inputs:
-    terraformVersion: '1.5.0'
+    terraformVersion: '1.5.0'  # Specify the version of Terraform you want to use
 
-# Initialize Terraform with backend configuration
+# Step 2: Initialize Terraform with backend configuration
 - task: Terraform@3
   inputs:
-    command: 'init'
-    backendServiceArm: 'Shail-Conn'
-    backendAzureRmResourceGroupName: 'myStorageResourceGroup'
-    backendAzureRmStorageAccountName: 'terracount02'
-    backendAzureRmContainerName: 'tfstate'
-    backendAzureRmKey: 'terraform.tfstate'
+    command: 'init'  # Initialize Terraform
+    backendServiceArm: 'Shail-Conn'  # Azure service connection for authentication
+    backendAzureRmResourceGroupName: 'my-tfstate-rg'  # Resource group for backend
+    backendAzureRmStorageAccountName: 'mystorageaccount'  # Storage account name
+    backendAzureRmContainerName: 'tfstate'  # Container for state file
+    backendAzureRmKey: 'terraform.tfstate'  # Name of the state file
     workingDirectory: $(System.DefaultWorkingDirectory)
 
-# Run Terraform Plan
+# Step 3: Run Terraform Plan
 - task: Terraform@3
   inputs:
-    command: 'plan'
+    command: 'plan'  # Generate a Terraform execution plan
     workingDirectory: $(System.DefaultWorkingDirectory)
-    environmentServiceNameAzureRM: 'Shail-Conn'
-    commandOptions: '-var-file=env/dev.tfvars -out=tfplan'
+    environmentServiceNameAzureRM: 'Shail-Conn'  # Azure service connection for authentication
+    commandOptions: '-var-file=env/dev.tfvars -out=tfplan'  # Correct reference to the tfvars under the 'env/' directory
 
-# Apply Terraform changes
+# Step 4: Apply Terraform changes
 - task: Terraform@3
   inputs:
-    command: 'apply'
+    command: 'apply'  # Apply the Terraform plan
     workingDirectory: $(System.DefaultWorkingDirectory)
-    environmentServiceNameAzureRM: 'Shail-Conn'
-    commandOptions: '-auto-approve tfplan'
+    environmentServiceNameAzureRM: 'Shail-Conn'  # Azure service connection for authentication
+    commandOptions: '-auto-approve tfplan'  # Automatically approve and apply the saved plan
