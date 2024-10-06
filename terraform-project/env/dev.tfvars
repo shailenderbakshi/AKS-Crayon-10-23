@@ -1,16 +1,12 @@
-resource_group_name   = "dev-rg"
-location              = "East US"
-storage_account_name  = "devstorageacct0102"
-account_tier          = "Standard"
-replication_type      = "LRS"
+# AKS Cluster Variables
+aks_name                  = "my-aks-cluster"
+dns_prefix                = "myaks"
+default_node_pool_name    = "default"
+default_node_pool_count   = 3
+default_node_pool_vm_size = "Standard_DS2_v2"
+service_cidr              = "10.0.0.0/16"
+dns_service_ip            = "10.0.0.10"
+docker_bridge_cidr        = "172.17.0.1/16"
+admin_group_object_id     = "411c37d2-f168-4870-8900-acf689bfcfd5"
 
-# VNet variables
-vnet_name             = "dev-vnet"
-vnet_address_space    = ["10.0.0.0/16"]
-subnet_name           = "dev-subnet"
-subnet_address_prefix = "10.0.1.0/24"
-
-# Variables for Log Analytics Workspace
-log_analytics_workspace_name = "dev-log-analytics"
-log_analytics_sku            = "PerGB2018"
-log_analytics_retention      = 30
+# Other variables for VNet, Storage, and Log Analytics should already be present.
