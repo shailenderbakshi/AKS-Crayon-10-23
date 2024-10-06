@@ -1,40 +1,64 @@
 trigger:
   branches:
     include:
-      - none  # This pipeline triggers on changes to the 'main' branch
+      - none
 
 pool:
-  vmImage: 'ubuntu-latest'  # Using the latest Ubuntu image for the pipeline
+  vmImage: 'ubuntu-latest'
+
+variables:
+  resourceGroupName: 'my-resource-group'  # Set your AKS resource group here
+  aksClusterName: 'my-aks-cluster'        # Set your AKS cluster name here
+  kubernetesNamespace: 'default'          # Set default namespace (optional)
 
 steps:
-# Step 1: Install Terraform (if not installed)
+# Step 1: Install Terraform
 - task: TerraformInstaller@0
   inputs:
-    terraformVersion: '1.5.0'  # Specify the version of Terraform you want to use
+    terraformVersion: '1.5.0'
 
 # Step 2: Initialize Terraform with backend configuration
 - task: TerraformTaskV2@2
   inputs:
-    command: 'init'  # Initialize Terraform
-    backendServiceArm: 'Crayon-Conn'  # Azure service connection for authentication
-    backendAzureRmResourceGroupName: 'myStorageResourceGroup'  # Resource group for backend
-    backendAzureRmStorageAccountName: 'terracount020304'  # Storage account name
-    backendAzureRmContainerName: 'tfstate'  # Container for state file
-    backendAzureRmKey: 'terraform.tfstate'  # Name of the state file
-    workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-project'  # Ensure this points to where your Terraform configs are
+    command: 'init'
+    backendServiceArm: 'Crayon-Conn'
+    backendAzureRmResourceGroupName: 'myStorageResourceGroup'
+    backendAzureRmStorageAccountName: 'terracount020304'
+    backendAzureRmContainerName: 'tfstate'
+    backendAzureRmKey: 'terraform.tfstate'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-project'
 
 # Step 3: Run Terraform Plan
 - task: TerraformTaskV2@2
   inputs:
-    command: 'plan'  # Generate a Terraform execution plan
-    workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-project'  # Ensure this points to where your Terraform configs are
-    environmentServiceNameAzureRM: 'Crayon-Conn'  # Azure service connection for authentication
-    commandOptions: '-var-file=env/dev.tfvars -out=tfplan'  # Ensure this points to the correct path of your .tfvars file inside the env folder
+    command: 'plan'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-project'
+    environmentServiceNameAzureRM: 'Crayon-Conn'
+    commandOptions: '-var-file=env/dev.tfvars -out=tfplan'
 
 # Step 4: Apply Terraform changes
 - task: TerraformTaskV2@2
   inputs:
-    command: 'apply'  # Apply the Terraform plan
-    workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-project'  # Ensure this points to where your Terraform configs are
-    environmentServiceNameAzureRM: 'Crayon-Conn'  # Azure service connection for authentication
-    commandOptions: '-auto-approve tfplan'  # Automatically approve and apply the saved plan
+    command: 'apply'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-project'
+    environmentServiceNameAzureRM: 'Crayon-Conn'
+    commandOptions: '-auto-approve tfplan'
+
+# Step 5: Install kubectl
+- task: KubectlInstaller@0
+  inputs:
+    kubectlVersion: 'latest'
+
+# Step 6: Get AKS credentials directly after creation
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: 'Crayon-Conn'
+    scriptType: bash
+    scriptLocation: inlineScript
+    inlineScript: |
+      az aks get-credentials --resource-group $(resourceGroupName) --name $(aksClusterName) --overwrite-existing
+
+# Step 7: Apply Kubernetes manifest using kubectl
+- script: |
+    kubectl apply -f manifests/nginx-deployment.yaml --namespace $(kubernetesNamespace)
+  displayName: 'Deploy NGINX to AKS'
