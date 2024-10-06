@@ -6,41 +6,33 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-variables:
-  - name: 'azureSubscription'
-    value: 'Shail-Conn'  # This should be your service connection name
-
 steps:
 # Step 1: Install Terraform
 - task: TerraformInstaller@0
   inputs:
-    terraformVersion: 'latest'
+    terraformVersion: '1.5.0'
 
-# Step 2: Terraform Initialization with -reconfigure
+# Step 2: Initialize Terraform (no backend needed here, it’s in provider.tf)
 - task: TerraformTaskV2@2
   inputs:
     provider: 'azurerm'
     command: 'init'
-    backendServiceArm: 'Shail-Conn'  # Ensure this matches your Azure DevOps service connection name
-    backendAzureRmResourceGroupName: 'myStorageResourceGroup'
-    backendAzureRmStorageAccountName: 'terracount02'
-    backendAzureRmContainerName: 'tfstate'
-    backendAzureRmKey: 'aks-cluster/terraform.tfstate'
-    commandOptions: '-reconfigure'  # This will reinitialize the backend
-    workingDirectory: '$(System.DefaultWorkingDirectory)/aks-module'  # Set working directory to the `aks-module` folder
+    workingDirectory: $(System.DefaultWorkingDirectory)
 
-# Step 3: Terraform Plan using tfvars file
+# Step 3: Terraform Plan
 - task: TerraformTaskV2@2
   inputs:
     provider: 'azurerm'
     command: 'plan'
-    workingDirectory: '$(System.DefaultWorkingDirectory)/aks-module'  # Adjust path if necessary
-    commandOptions: '-var-file="terraform.tfvars"'
+    workingDirectory: $(System.DefaultWorkingDirectory)
+    environmentServiceName: 'Shail-Conn' # Reference to Azure service connection
+    commandOptions: '-var-file=env/dev.tfvars -out=tfplan'
 
-# Step 4: Terraform Apply using tfvars file
+# Step 4: Terraform Apply
 - task: TerraformTaskV2@2
   inputs:
     provider: 'azurerm'
     command: 'apply'
-    workingDirectory: '$(System.DefaultWorkingDirectory)/aks-module'  # Adjust path if necessary
-    commandOptions: '-var-file="terraform.tfvars" -auto-approve'
+    workingDirectory: $(System.DefaultWorkingDirectory)
+    environmentServiceName: 'Shail-Conn' # Reference to Azure service connection
+    commandOptions: '-auto-approve tfplan'
