@@ -1,3 +1,4 @@
+# Resource Group Variables
 variable "resource_group_name" {
   description = "The name of the resource group"
   type        = string
@@ -8,13 +9,14 @@ variable "location" {
   type        = string
 }
 
+# Log Analytics Variables
 variable "log_analytics_workspace_name" {
   description = "The name of the Log Analytics workspace"
   type        = string
 }
 
 variable "log_analytics_sku" {
-  description = "The SKU for the Log Analytics workspace (e.g., PerGB2018)"
+  description = "The SKU for the Log Analytics workspace"
   type        = string
   default     = "PerGB2018"
 }
@@ -25,27 +27,59 @@ variable "log_analytics_retention" {
   default     = 30
 }
 
-variable "tags" {
-  description = "Tags to be applied to resources"
-  type        = map(string)
-  default     = {}
-}
-
-variable "storage_account_name" {
-  description = "The name of the storage account"
+# AKS Cluster Variables
+variable "aks_name" {
+  description = "The name of the AKS cluster"
   type        = string
 }
 
-variable "account_tier" {
-  description = "The account tier for the storage account (e.g., Standard or Premium)"
+variable "dns_prefix" {
+  description = "DNS prefix for the AKS cluster"
   type        = string
 }
 
-variable "replication_type" {
-  description = "The replication type for the storage account (e.g., LRS, GRS)"
+variable "default_node_pool_name" {
+  description = "The name of the default node pool"
+  type        = string
+  default     = "default"
+}
+
+variable "default_node_pool_count" {
+  description = "The number of nodes in the default node pool"
+  type        = number
+  default     = 3
+}
+
+variable "default_node_pool_vm_size" {
+  description = "The size of the virtual machines in the default node pool"
+  type        = string
+  default     = "Standard_DS2_v2"
+}
+
+variable "service_cidr" {
+  description = "The service CIDR for the AKS cluster"
+  type        = string
+  default     = "10.0.0.0/16"
+}
+
+variable "dns_service_ip" {
+  description = "The IP address of the DNS service within the AKS cluster"
+  type        = string
+  default     = "10.0.0.10"
+}
+
+variable "docker_bridge_cidr" {
+  description = "The Docker bridge CIDR for the AKS cluster"
+  type        = string
+  default     = "172.17.0.1/16"
+}
+
+variable "admin_group_object_id" {
+  description = "The object ID of the AAD group with cluster admin permissions"
   type        = string
 }
 
+# VNet Variables
 variable "vnet_name" {
   description = "The name of the virtual network"
   type        = string
@@ -64,4 +98,11 @@ variable "subnet_name" {
 variable "subnet_address_prefix" {
   description = "The address prefix for the subnet"
   type        = string
+}
+
+# Tags
+variable "tags" {
+  description = "Tags to be applied to resources"
+  type        = map(string)
+  default     = {}
 }
