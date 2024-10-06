@@ -9,4 +9,27 @@ dns_service_ip            = "10.0.0.10"
 docker_bridge_cidr        = "172.17.0.1/16"
 admin_group_object_id     = "411c37d2-f168-4870-8900-acf689bfcfd5"
 
-# Other variables for VNet, Storage, and Log Analytics should already be present.
+# Resource Group and Location
+resource_group_name = "my-resource-group"
+location            = "East US"
+
+# Log Analytics Variables
+log_analytics_workspace_name = "my-log-analytics"
+log_analytics_sku            = "PerGB2018"
+log_analytics_retention      = 30
+
+# Storage Variables
+storage_account_name = "mystorageaccount"
+account_tier         = "Standard"
+replication_type     = "LRS"
+
+# VNet Variables
+vnet_name             = "my-vnet"
+vnet_address_space    = ["10.0.0.0/16"]
+subnet_name           = "my-subnet"
+subnet_address_prefix = "10.0.1.0/24"
+
+# Tags
+tags = {
+  environment = "dev"
+}
