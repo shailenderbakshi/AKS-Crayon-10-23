@@ -3,7 +3,7 @@ aks_name                  = "my-aks-cluster"
 dns_prefix                = "myaks"
 default_node_pool_name    = "default"
 default_node_pool_count   = 3
-default_node_pool_vm_size = "Standard D8ds v5"
+default_node_pool_vm_size = "Standard_D4s_v3"
 service_cidr              = "10.0.0.0/16"
 dns_service_ip            = "10.0.0.10"
 docker_bridge_cidr        = "172.17.0.1/16"
@@ -19,7 +19,7 @@ log_analytics_sku            = "PerGB2018"
 log_analytics_retention      = 30
 
 # Storage Variables
-storage_account_name = "nottaccount01020304"
+storage_account_name = "snottaccount01020304"
 account_tier         = "Standard"
 replication_type     = "LRS"
 
