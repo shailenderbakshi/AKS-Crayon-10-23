@@ -1,8 +1,3 @@
-# Configure the Azure provider
-provider "azurerm" {
-  features {}
-}
-
 # Log Analytics module
 module "log_analytics" {
   source = "./modules/log_analytics"
