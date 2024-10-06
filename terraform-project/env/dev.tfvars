@@ -1,5 +1,5 @@
 resource_group_name   = "dev-rg"
 location              = "East US"
-storage_account_name  = "devstorageacct"
+storage_account_name  = "devstorageacct0102"
 account_tier          = "Standard"
 replication_type      = "LRS"
