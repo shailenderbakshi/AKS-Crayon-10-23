@@ -16,7 +16,6 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   azure_active_directory_role_based_access_control {
-    enabled = true
     admin_group_object_ids = [var.admin_group_object_id]
   }
 
@@ -25,9 +24,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     network_policy    = "azure"
     service_cidr      = var.service_cidr
     dns_service_ip    = var.dns_service_ip
-    # Remove docker_bridge_cidr if not supported in your provider version
   }
 
-  # Remove addon_profile block if not supported by your provider version
   tags = var.tags
 }
