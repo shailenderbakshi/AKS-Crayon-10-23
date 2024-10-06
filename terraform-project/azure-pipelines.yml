@@ -60,5 +60,5 @@ steps:
 
 # Step 7: Apply Kubernetes manifest using kubectl
 - script: |
-    kubectl apply -f manifests/nginx-deployment.yaml --namespace $(kubernetesNamespace)
+    kubectl apply -f terraform-project/manifests/nginx-deployment.yaml --namespace $(kubernetesNamespace)
   displayName: 'Deploy NGINX to AKS'
