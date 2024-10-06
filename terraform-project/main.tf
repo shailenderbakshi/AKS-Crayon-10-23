@@ -51,5 +51,6 @@ module "aks" {
   log_analytics_workspace_id = module.log_analytics.log_analytics_workspace_id
   tags                       = var.tags
 
+  # Ensure AKS waits for Log Analytics
   depends_on = [module.log_analytics]
 }
