@@ -7,9 +7,9 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  resourceGroupName: 'my-resource-group'  # Your AKS resource group
-  aksClusterName: 'my-aks-cluster'        # Your AKS cluster name
-  kubernetesNamespace: 'default'          # Namespace for deployment
+  resourceGroupName: 'my-resource-group'      # Your AKS resource group
+  aksClusterName: 'my-aks-cluster'            # Your AKS cluster name
+  kubernetesNamespace: 'default'              # Namespace for deployment
 
 steps:
 # Step 1: Install Terraform
@@ -58,7 +58,14 @@ steps:
     inlineScript: |
       az aks get-credentials --resource-group $(resourceGroupName) --name $(aksClusterName) --admin --overwrite-existing
 
-# Step 7: Apply Kubernetes manifest using kubectl
+# Step 7: Assign cluster-admin role to AAD user
+- script: |
+    kubectl create clusterrolebinding shailender-cluster-admin-binding \
+      --clusterrole=cluster-admin \
+      --user=adm-shailender@crayonuk.tech || echo "Role binding may already exist"
+  displayName: 'Assign Cluster Admin Role to AAD User'
+
+# Step 8: Apply Kubernetes manifest using kubectl
 - script: |
     kubectl apply -f terraform-project/manifests/nginx-deployment.yaml --namespace $(kubernetesNamespace)
   displayName: 'Deploy NGINX to AKS'
