@@ -1,26 +1,24 @@
 variable "resource_group_name" {
-  description = "Name of the resource group"
   type        = string
+  description = "The name of the resource group"
 }
 
 variable "location" {
-  description = "Location of the resource group"
   type        = string
+  description = "The Azure location"
 }
 
 variable "storage_account_name" {
-  description = "Name of the storage account"
   type        = string
+  description = "The name of the storage account"
 }
 
 variable "account_tier" {
-  description = "Tier of the storage account"
   type        = string
-  default     = "Standard"
+  description = "The account tier of the storage account"
 }
 
 variable "replication_type" {
-  description = "Replication type of the storage account"
   type        = string
-  default     = "LRS"
+  description = "The replication type of the storage account"
 }
