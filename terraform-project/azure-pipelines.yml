@@ -21,20 +21,20 @@ steps:
     backendAzureRmStorageAccountName: 'mystorageaccount'  # Storage account name
     backendAzureRmContainerName: 'tfstate'  # Container for state file
     backendAzureRmKey: 'terraform.tfstate'  # Name of the state file
-    workingDirectory: $(System.DefaultWorkingDirectory)
+    workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-project'  # Ensure this points to where your Terraform configs are
 
 # Step 3: Run Terraform Plan
 - task: TerraformTaskV2@2
   inputs:
     command: 'plan'  # Generate a Terraform execution plan
-    workingDirectory: $(System.DefaultWorkingDirectory)
+    workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-project'  # Ensure this points to where your Terraform configs are
     environmentServiceNameAzureRM: 'Shail-Conn'  # Azure service connection for authentication
-    commandOptions: '-var-file=env/dev.tfvars -out=tfplan'  # Correct reference to the tfvars under the 'env/' directory
+    commandOptions: '-var-file=env/dev.tfvars -out=tfplan'  # Ensure this points to the correct path of your .tfvars file inside the env folder
 
 # Step 4: Apply Terraform changes
 - task: TerraformTaskV2@2
   inputs:
     command: 'apply'  # Apply the Terraform plan
-    workingDirectory: $(System.DefaultWorkingDirectory)
+    workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-project'  # Ensure this points to where your Terraform configs are
     environmentServiceNameAzureRM: 'Shail-Conn'  # Azure service connection for authentication
     commandOptions: '-auto-approve tfplan'  # Automatically approve and apply the saved plan
