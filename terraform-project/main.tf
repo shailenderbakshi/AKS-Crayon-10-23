@@ -1,25 +1,9 @@
-# Resource Group and Storage Account Module
-module "rg_storage" {
-  source               = "./modules/rg_storage"
-  resource_group_name  = var.resource_group_name
-  location             = var.location
-  storage_account_name = var.storage_account_name
-  account_tier         = var.account_tier
-  replication_type     = var.replication_type
+# Configure the Azure provider
+provider "azurerm" {
+  features {}
 }
 
-# Virtual Network and Subnet Module
-module "vnet" {
-  source               = "./modules/vnet"
-  vnet_name            = var.vnet_name
-  vnet_address_space   = var.vnet_address_space
-  location             = var.location
-  resource_group_name  = var.resource_group_name
-  subnet_name          = var.subnet_name
-  subnet_address_prefix = var.subnet_address_prefix
-}
-
-# Log Analytics Workspace Module
+# Log Analytics module
 module "log_analytics" {
   source = "./modules/log_analytics"
 
@@ -31,7 +15,7 @@ module "log_analytics" {
   tags                         = var.tags
 }
 
-# AKS Cluster Module
+# AKS Cluster module
 module "aks" {
   source = "./modules/aks"
 
@@ -48,7 +32,32 @@ module "aks" {
   docker_bridge_cidr        = var.docker_bridge_cidr
   admin_group_object_id     = var.admin_group_object_id
 
-  # Dynamically pass Log Analytics Workspace ID
   log_analytics_workspace_id = module.log_analytics.log_analytics_workspace_id
   environment                = var.environment
+
+  # Add explicit dependency
+  depends_on = [module.log_analytics]
+}
+
+# Virtual Network module
+module "vnet" {
+  source = "./modules/vnet"
+
+  vnet_name            = var.vnet_name
+  vnet_address_space   = var.vnet_address_space
+  location             = var.location
+  resource_group_name  = var.resource_group_name
+  subnet_name          = var.subnet_name
+  subnet_address_prefix = var.subnet_address_prefix
+}
+
+# (Optional) Resource Group and Storage module
+module "rg_storage" {
+  source = "./modules/rg_storage"
+
+  resource_group_name  = var.resource_group_name
+  location             = var.location
+  storage_account_name = var.storage_account_name
+  account_tier         = var.account_tier
+  replication_type     = var.replication_type
 }
