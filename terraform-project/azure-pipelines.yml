@@ -35,5 +35,5 @@ steps:
     provider: 'azurerm'
     command: 'apply'  # Apply the Terraform plan
     workingDirectory: $(System.DefaultWorkingDirectory)
-    backendServiceArm: 'Shail-Conn''
+    backendServiceArm: 'Shail-Conn'
     commandOptions: '-auto-approve tfplan'  # Automatically approve and apply the saved plan
