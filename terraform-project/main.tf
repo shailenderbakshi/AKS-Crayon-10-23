@@ -19,6 +19,18 @@ module "vnet" {
   subnet_address_prefix = var.subnet_address_prefix
 }
 
+# Log Analytics Workspace Module
+module "log_analytics" {
+  source = "./modules/log_analytics"
+
+  log_analytics_workspace_name = var.log_analytics_workspace_name
+  location                     = var.location
+  resource_group_name          = var.resource_group_name
+  sku                          = var.log_analytics_sku
+  retention_in_days            = var.log_analytics_retention
+  tags                         = var.tags
+}
+
 # AKS Cluster Module
 module "aks" {
   source = "./modules/aks"
@@ -35,17 +47,8 @@ module "aks" {
   dns_service_ip            = var.dns_service_ip
   docker_bridge_cidr        = var.docker_bridge_cidr
   admin_group_object_id     = var.admin_group_object_id
-  log_analytics_workspace_id = var.log_analytics_workspace_id
-  environment               = var.environment
-}
 
-module "log_analytics" {
-  source = "./modules/log_analytics"
-
-  log_analytics_workspace_name = var.log_analytics_workspace_name
-  location                     = var.location
-  resource_group_name          = var.resource_group_name
-  sku                          = var.log_analytics_sku
-  retention_in_days            = var.log_analytics_retention
-  tags                         = var.tags
+  # Dynamically pass Log Analytics Workspace ID
+  log_analytics_workspace_id = module.log_analytics.log_analytics_workspace_id
+  environment                = var.environment
 }
