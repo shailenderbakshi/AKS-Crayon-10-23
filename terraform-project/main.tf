@@ -1,4 +1,4 @@
-# Resource Group and Storage Account module
+# Resource Group and Storage Account Module
 module "rg_storage" {
   source               = "./modules/rg_storage"
   resource_group_name  = var.resource_group_name
@@ -8,7 +8,7 @@ module "rg_storage" {
   replication_type     = var.replication_type
 }
 
-# Virtual Network module
+# Virtual Network (VNet) Module
 module "vnet" {
   source               = "./modules/vnet"
   vnet_name            = var.vnet_name
