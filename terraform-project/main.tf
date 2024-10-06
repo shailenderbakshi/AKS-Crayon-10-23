@@ -14,7 +14,7 @@ module "vnet" {
   vnet_name            = var.vnet_name
   vnet_address_space   = var.vnet_address_space
   location             = var.location
-  resource_group_name  = module.rg_storage.resource_group_name  # Reference RG from rg_storage
+  resource_group_name  = module.rg_storage.resource_group_name
   subnet_name          = var.subnet_name
   subnet_address_prefix = var.subnet_address_prefix
 }
@@ -25,8 +25,32 @@ module "log_analytics" {
 
   log_analytics_workspace_name = var.log_analytics_workspace_name
   location                     = var.location
-  resource_group_name          = module.rg_storage.resource_group_name  # Reference RG from rg_storage
+  resource_group_name          = module.rg_storage.resource_group_name
   sku                          = var.log_analytics_sku
   retention_in_days            = var.log_analytics_retention
   tags                         = var.tags
+}
+
+# AKS Module
+module "aks" {
+  source = "./modules/aks"
+
+  aks_name                  = var.aks_name
+  location                  = var.location
+  resource_group_name       = module.rg_storage.resource_group_name
+  dns_prefix                = var.dns_prefix
+  default_node_pool_name    = var.default_node_pool_name
+  default_node_pool_count   = var.default_node_pool_count
+  default_node_pool_vm_size = var.default_node_pool_vm_size
+  subnet_id                 = module.vnet.subnet_id  # Reference to the subnet in the VNet
+  service_cidr              = var.service_cidr
+  dns_service_ip            = var.dns_service_ip
+  docker_bridge_cidr        = var.docker_bridge_cidr
+  admin_group_object_id     = var.admin_group_object_id
+
+  # Pass the Log Analytics workspace ID dynamically
+  log_analytics_workspace_id = module.log_analytics.log_analytics_workspace_id
+  tags                       = var.tags
+
+  depends_on = [module.log_analytics]  # Ensure AKS waits for Log Analytics
 }
