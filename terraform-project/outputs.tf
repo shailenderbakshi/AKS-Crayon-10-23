@@ -41,3 +41,12 @@ output "node_resource_group" {
   description = "The resource group where AKS nodes (VMs) are deployed"
   value       = module.aks.node_resource_group
 }
+
+# Root module outputs
+
+# Mark kubeconfig as sensitive to prevent accidental exposure
+output "kube_config" {
+  description = "The kubeconfig for the AKS cluster"
+  value       = module.aks.kube_config  # Refers to the kubeconfig from the AKS module
+  sensitive   = true                    # Mark as sensitive to avoid exposure
+}
