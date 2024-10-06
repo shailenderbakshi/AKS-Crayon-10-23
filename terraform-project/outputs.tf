@@ -35,3 +35,9 @@ output "node_resource_group" {
   description = "The resource group where AKS VMs are deployed"
   value       = module.aks.node_resource_group
 }
+
+# Output for Log Analytics Workspace ID
+output "log_analytics_workspace_id" {
+  description = "The ID of the Log Analytics workspace"
+  value       = module.log_analytics.log_analytics_workspace_id
+}
