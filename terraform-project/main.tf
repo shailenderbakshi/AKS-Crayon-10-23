@@ -23,18 +23,18 @@ module "vnet" {
 module "aks" {
   source = "./modules/aks"
 
-  aks_name                  = "my-aks-cluster"
+  aks_name                  = var.aks_name
   location                  = var.location
   resource_group_name       = var.resource_group_name
-  dns_prefix                = "myaksdns"
-  default_node_pool_name    = "nodepool"
-  default_node_pool_count   = 3
-  default_node_pool_vm_size = "Standard_DS2_v2"
+  dns_prefix                = var.dns_prefix
+  default_node_pool_name    = var.default_node_pool_name
+  default_node_pool_count   = var.default_node_pool_count
+  default_node_pool_vm_size = var.default_node_pool_vm_size
   subnet_id                 = module.vnet.subnet_id
-  service_cidr              = "10.0.0.0/16"
-  dns_service_ip            = "10.0.0.10"
-  docker_bridge_cidr        = "172.17.0.1/16"
+  service_cidr              = var.service_cidr
+  dns_service_ip            = var.dns_service_ip
+  docker_bridge_cidr        = var.docker_bridge_cidr
   admin_group_object_id     = var.admin_group_object_id
   log_analytics_workspace_id = var.log_analytics_workspace_id
-  environment               = "production"
+  environment               = var.environment
 }
