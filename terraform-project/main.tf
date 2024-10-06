@@ -42,15 +42,14 @@ module "aks" {
   default_node_pool_name    = var.default_node_pool_name
   default_node_pool_count   = var.default_node_pool_count
   default_node_pool_vm_size = var.default_node_pool_vm_size
-  subnet_id                 = module.vnet.subnet_id  # Reference to the subnet in the VNet
+  subnet_id                 = module.vnet.subnet_id
   service_cidr              = var.service_cidr
   dns_service_ip            = var.dns_service_ip
   docker_bridge_cidr        = var.docker_bridge_cidr
   admin_group_object_id     = var.admin_group_object_id
 
-  # Pass the Log Analytics workspace ID dynamically
   log_analytics_workspace_id = module.log_analytics.log_analytics_workspace_id
   tags                       = var.tags
 
-  depends_on = [module.log_analytics]  # Ensure AKS waits for Log Analytics
+  depends_on = [module.log_analytics]
 }
