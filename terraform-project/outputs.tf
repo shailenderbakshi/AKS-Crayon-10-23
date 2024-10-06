@@ -32,11 +32,6 @@ output "aks_cluster_name" {
   value       = module.aks.aks_cluster_name
 }
 
-output "kube_config" {
-  description = "The kubeconfig for the AKS cluster"
-  value       = module.aks.kube_config
-}
-
 output "node_resource_group" {
   description = "The resource group where AKS nodes (VMs) are deployed"
   value       = module.aks.node_resource_group
