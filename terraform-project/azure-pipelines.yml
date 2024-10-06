@@ -49,7 +49,12 @@ steps:
   inputs:
     kubectlVersion: 'latest'
 
-# Step 6: Get AKS credentials directly after creation
+# Step 6: Install kubelogin (required for AAD-enabled AKS clusters)
+- script: |
+    sudo az aks install-cli  # Install kubelogin via Azure CLI
+  displayName: 'Install kubelogin'
+
+# Step 7: Get AKS credentials directly after creation
 - task: AzureCLI@2
   inputs:
     azureSubscription: 'Crayon-Conn'
@@ -58,7 +63,7 @@ steps:
     inlineScript: |
       az aks get-credentials --resource-group $(resourceGroupName) --name $(aksClusterName) --overwrite-existing
 
-# Step 7: Apply Kubernetes manifest using kubectl
+# Step 8: Apply Kubernetes manifest using kubectl
 - script: |
     kubectl apply -f terraform-project/manifests/nginx-deployment.yaml --namespace $(kubernetesNamespace)
   displayName: 'Deploy NGINX to AKS'
