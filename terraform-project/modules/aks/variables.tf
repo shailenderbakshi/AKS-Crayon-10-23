@@ -3,16 +3,6 @@ variable "aks_name" {
   type        = string
 }
 
-variable "location" {
-  description = "The location for the AKS cluster"
-  type        = string
-}
-
-variable "resource_group_name" {
-  description = "The name of the resource group"
-  type        = string
-}
-
 variable "dns_prefix" {
   description = "The DNS prefix for the AKS cluster"
   type        = string
@@ -60,10 +50,5 @@ variable "admin_group_object_id" {
 
 variable "log_analytics_workspace_id" {
   description = "The ID of the Log Analytics workspace"
-  type        = string
-}
-
-variable "environment" {
-  description = "The environment tag for the cluster"
   type        = string
 }
