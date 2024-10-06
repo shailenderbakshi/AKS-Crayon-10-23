@@ -3,6 +3,16 @@ variable "log_analytics_workspace_name" {
   type        = string
 }
 
+variable "location" {
+  description = "The location where the Log Analytics workspace will be created"
+  type        = string
+}
+
+variable "resource_group_name" {
+  description = "The name of the resource group in which to create the Log Analytics workspace"
+  type        = string
+}
+
 variable "sku" {
   description = "The SKU for the Log Analytics workspace (e.g., PerGB2018)"
   type        = string
