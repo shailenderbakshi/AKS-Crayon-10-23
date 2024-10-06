@@ -25,15 +25,9 @@ resource "azurerm_kubernetes_cluster" "aks" {
     network_policy    = "azure"
     service_cidr      = var.service_cidr
     dns_service_ip    = var.dns_service_ip
-    docker_bridge_cidr = var.docker_bridge_cidr
+    # Remove docker_bridge_cidr if not supported in your provider version
   }
 
-  addon_profile {
-    oms_agent {
-      enabled                    = true
-      log_analytics_workspace_id  = var.log_analytics_workspace_id
-    }
-  }
-
+  # Remove addon_profile block if not supported by your provider version
   tags = var.tags
 }
