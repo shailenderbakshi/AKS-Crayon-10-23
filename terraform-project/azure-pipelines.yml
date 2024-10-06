@@ -1,38 +1,39 @@
 trigger:
   branches:
     include:
-      - none
+      - main  # This pipeline triggers on changes to the 'main' branch
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'ubuntu-latest'  # Using the latest Ubuntu image for the pipeline
 
 steps:
 # Step 1: Install Terraform
 - task: TerraformInstaller@0
   inputs:
-    terraformVersion: '1.5.0'
+    terraformVersion: '1.5.0'  # Specify the version of Terraform you want to use
 
-# Step 2: Initialize Terraform (no backend needed here, it’s in provider.tf)
+# Step 2: Initialize Terraform (backend is configured in provider.tf, but we need to specify service connection)
+- task: TerraformTaskV2@2
+  inputs:
+    provider: 'azurerm'  # Azure provider
+    command: 'init'  # Initialize Terraform
+    backendServiceArm: 'Shail-Conn'  # This is the Azure service connection for authentication
+    workingDirectory: $(System.DefaultWorkingDirectory)  # Root directory
+
+# Step 3: Run Terraform Plan
 - task: TerraformTaskV2@2
   inputs:
     provider: 'azurerm'
-    command: 'init'
+    command: 'plan'  # Generate a Terraform execution plan
     workingDirectory: $(System.DefaultWorkingDirectory)
+    backendServiceArm: 'Shail-Conn'  # Azure service connection for authentication
+    commandOptions: '-var-file=env/dev.tfvars -out=tfplan'  # Correct reference to the tfvars under the 'env/' directory
 
-# Step 3: Terraform Plan
+# Step 4: Apply Terraform changes
 - task: TerraformTaskV2@2
   inputs:
     provider: 'azurerm'
-    command: 'plan'
+    command: 'apply'  # Apply the Terraform plan
     workingDirectory: $(System.DefaultWorkingDirectory)
-    environmentServiceName: 'Shail-Conn' # Reference to Azure service connection
-    commandOptions: '-var-file=env/dev.tfvars -out=tfplan'
-
-# Step 4: Terraform Apply
-- task: TerraformTaskV2@2
-  inputs:
-    provider: 'azurerm'
-    command: 'apply'
-    workingDirectory: $(System.DefaultWorkingDirectory)
-    environmentServiceName: 'Shail-Conn' # Reference to Azure service connection
-    commandOptions: '-auto-approve tfplan'
+    backendServiceArm: 'Shail-Conn''
+    commandOptions: '-auto-approve tfplan'  # Automatically approve and apply the saved plan
