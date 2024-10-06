@@ -1,7 +1,7 @@
 trigger:
   branches:
     include:
-      - main  # This pipeline triggers on changes to the 'main' branch
+      - none  # This pipeline triggers on changes to the 'main' branch
 
 pool:
   vmImage: 'ubuntu-latest'  # Using the latest Ubuntu image for the pipeline
