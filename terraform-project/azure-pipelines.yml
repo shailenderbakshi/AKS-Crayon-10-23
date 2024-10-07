@@ -65,7 +65,12 @@ steps:
       --user=adm-shailender@crayonuk.tech || echo "Role binding may already exist"
   displayName: 'Assign Cluster Admin Role to AAD User'
 
-# Step 8: Apply Kubernetes manifest using kubectl
+# Step 8: Deploy NGINX service to AKS
 - script: |
     kubectl apply -f terraform-project/manifests/nginx-deployment.yaml --namespace $(kubernetesNamespace)
   displayName: 'Deploy NGINX to AKS'
+
+# Step 9: Deploy Voting App to AKS
+- script: |
+    kubectl apply -f terraform-project/manifests/voting-app.yaml --namespace $(kubernetesNamespace)
+  displayName: 'Deploy Voting App to AKS'
