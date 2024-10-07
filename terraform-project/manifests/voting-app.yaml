@@ -20,7 +20,7 @@ spec:
       - name: vote
         image: dockersamples/examplevotingapp_vote:latest
         ports:
-        - containerPort: 8080  # Changed to 8080
+        - containerPort: 8080  # Internal port within the container
 ---
 apiVersion: v1
 kind: Service
@@ -31,8 +31,8 @@ spec:
     app: voting
   ports:
   - protocol: TCP
-    port: 80              # External port on the LoadBalancer (can stay 80 if desired)
-    targetPort: 8080      # Internal port to route traffic to (matches containerPort)
+    port: 8080           # External port on the LoadBalancer (change to 8080)
+    targetPort: 8080     # Internal port to route traffic to (matches containerPort)
   type: LoadBalancer
 ---
 # Redis Deployment and Service
