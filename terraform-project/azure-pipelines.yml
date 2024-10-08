@@ -22,7 +22,7 @@ steps:
   inputs:
     command: 'init'
     backendServiceArm: 'Shail-Conn'
-    backendAzureRmResourceGroupName: 'myStorageResourceGroup'
+    backendAzureRmResourceGroupName: 'myStorageResourceGroup01'
     backendAzureRmStorageAccountName: 'terracount020304'
     backendAzureRmContainerName: 'tfstate'
     backendAzureRmKey: 'terraform.tfstate'
