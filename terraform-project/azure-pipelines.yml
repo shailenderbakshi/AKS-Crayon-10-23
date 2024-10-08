@@ -25,7 +25,7 @@ steps:
     backendAzureRmResourceGroupName: 'myStorageResourceGroup'
     backendAzureRmStorageAccountName: 'terracount02'
     backendAzureRmContainerName: 'tfstate'
-    backendAzureRmKey: 'terraform.tfstate'
+    backendAzureRmKey: 'terraform2.tfstate'
     workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-project'
 
 # Step 3: Run Terraform Plan
