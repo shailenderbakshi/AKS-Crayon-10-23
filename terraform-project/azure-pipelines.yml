@@ -23,9 +23,9 @@ steps:
     command: 'init'
     backendServiceArm: 'Shail-Conn'
     backendAzureRmResourceGroupName: 'myStorageResourceGroup'
-    backendAzureRmStorageAccountName: 'terracount02'
+    backendAzureRmStorageAccountName: 'terracount020304'
     backendAzureRmContainerName: 'tfstate'
-    backendAzureRmKey: 'terraform2.tfstate'
+    backendAzureRmKey: 'terraform.tfstate'
     workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-project'
 
 # Step 3: Run Terraform Plan
@@ -33,7 +33,7 @@ steps:
   inputs:
     command: 'plan'
     workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-project'
-    environmentServiceNameAzureRM: 'Shail-Conn'
+    environmentServiceNameAzureRM: 'Crayon-Conn'
     commandOptions: '-var-file=env/dev.tfvars -out=tfplan'
 
 # Step 4: Apply Terraform changes
@@ -41,7 +41,7 @@ steps:
   inputs:
     command: 'apply'
     workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-project'
-    environmentServiceNameAzureRM: 'Shail-Conn'
+    environmentServiceNameAzureRM: 'Crayon-Conn'
     commandOptions: '-auto-approve tfplan'
 
 # Step 5: Install kubectl
@@ -52,7 +52,7 @@ steps:
 # Step 6: Get AKS admin credentials (bypasses AAD)
 - task: AzureCLI@2
   inputs:
-    azureSubscription: 'Shail-Conn'
+    azureSubscription: 'Crayon-Conn'
     scriptType: bash
     scriptLocation: inlineScript
     inlineScript: |
