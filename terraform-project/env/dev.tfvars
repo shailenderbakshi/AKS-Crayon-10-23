@@ -19,7 +19,7 @@ log_analytics_sku            = "PerGB2018"
 log_analytics_retention      = 30
 
 # Storage Variables
-storage_account_name = "snottaccount01020304"
+storage_account_name = "snottaccount0102030405"
 account_tier         = "Standard"
 replication_type     = "LRS"
 
