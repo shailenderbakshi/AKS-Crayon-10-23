@@ -21,7 +21,7 @@ steps:
 - task: TerraformTaskV2@2
   inputs:
     command: 'init'
-    backendServiceArm: 'Shail-Conn'
+    backendServiceArm: 'Crayon-Conn'
     backendAzureRmResourceGroupName: 'myStorageResourceGroup'
     backendAzureRmStorageAccountName: 'terracount020304'
     backendAzureRmContainerName: 'tfstate'
@@ -62,7 +62,7 @@ steps:
 - script: |
     kubectl create clusterrolebinding shailender-cluster-admin-binding \
       --clusterrole=cluster-admin \
-      --user=snotts@gmail.com || echo "Role binding may already exist"
+      --user=adm-shailender@crayonuk.tech || echo "Role binding may already exist"
   displayName: 'Assign Cluster Admin Role to AAD User'
 
 # Step 8: Deploy NGINX service to AKS
