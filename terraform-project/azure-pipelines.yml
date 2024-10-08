@@ -21,7 +21,7 @@ steps:
 - task: TerraformTaskV2@2
   inputs:
     command: 'init'
-    backendServiceArm: 'Crayon-Conn'
+    backendServiceArm: 'Shail-Conn'
     backendAzureRmResourceGroupName: 'myStorageResourceGroup'
     backendAzureRmStorageAccountName: 'terracount020304'
     backendAzureRmContainerName: 'tfstate'
@@ -33,7 +33,7 @@ steps:
   inputs:
     command: 'plan'
     workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-project'
-    environmentServiceNameAzureRM: 'Crayon-Conn'
+    environmentServiceNameAzureRM: 'Shail-Conn'
     commandOptions: '-var-file=env/dev.tfvars -out=tfplan'
 
 # Step 4: Apply Terraform changes
@@ -41,7 +41,7 @@ steps:
   inputs:
     command: 'apply'
     workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-project'
-    environmentServiceNameAzureRM: 'Crayon-Conn'
+    environmentServiceNameAzureRM: 'Shail-Conn'
     commandOptions: '-auto-approve tfplan'
 
 # Step 5: Install kubectl
@@ -52,7 +52,7 @@ steps:
 # Step 6: Get AKS admin credentials (bypasses AAD)
 - task: AzureCLI@2
   inputs:
-    azureSubscription: 'Crayon-Conn'
+    azureSubscription: 'Shail-Conn'
     scriptType: bash
     scriptLocation: inlineScript
     inlineScript: |
@@ -62,7 +62,7 @@ steps:
 - script: |
     kubectl create clusterrolebinding shailender-cluster-admin-binding \
       --clusterrole=cluster-admin \
-      --user=adm-shailender@crayonuk.tech || echo "Role binding may already exist"
+      --user=snotts@gmail.com || echo "Role binding may already exist"
   displayName: 'Assign Cluster Admin Role to AAD User'
 
 # Step 8: Deploy NGINX service to AKS
