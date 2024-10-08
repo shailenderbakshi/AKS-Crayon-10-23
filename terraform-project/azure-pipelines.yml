@@ -22,8 +22,8 @@ steps:
   inputs:
     command: 'init'
     backendServiceArm: 'Shail-Conn'
-    backendAzureRmResourceGroupName: 'myStorageResourceGroup01'
-    backendAzureRmStorageAccountName: 'terracount020304'
+    backendAzureRmResourceGroupName: 'myStorageResourceGroup'
+    backendAzureRmStorageAccountName: 'terracount02'
     backendAzureRmContainerName: 'tfstate'
     backendAzureRmKey: 'terraform.tfstate'
     workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-project'
