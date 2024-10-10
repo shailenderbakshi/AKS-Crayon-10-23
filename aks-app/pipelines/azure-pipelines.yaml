@@ -32,7 +32,7 @@ stages:
           steps:
           - task: AzureCLI@2
             inputs:
-              azureSubscription: '<your-azure-service-connection>'
+              azureSubscription: 'Crayon-Conn'
               scriptType: 'bash'
               scriptLocation: 'inlineScript'
               inlineScript: |
