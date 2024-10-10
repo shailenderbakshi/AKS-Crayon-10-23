@@ -1,0 +1,37 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  acrName: '<your-acr-name>'
+  aksResourceGroup: '<your-aks-resource-group>'
+  aksClusterName: '<your-aks-cluster-name>'
+
+stages:
+- stage: Build
+  jobs:
+  - job: BuildAndPush
+    steps:
+    - task: Docker@2
+      inputs:
+        containerRegistry: '$(acrName)'
+        repository: 'aks-app'
+        command: 'buildAndPush'
+        Dockerfile: 'docker/Dockerfile'
+        tags: $(Build.BuildId)
+
+- stage: Deploy
+  jobs:
+  - deployment: DeployToAKS
+    environment: 'aks-environment'
+    steps:
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: '<your-azure-service-connection>'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az aks get-credentials --resource-group $(aksResourceGroup) --name $(aksClusterName)
+          kubectl apply -f manifests/k8s-deployment.yaml
