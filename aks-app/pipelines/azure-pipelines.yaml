@@ -22,7 +22,7 @@ stages:
     - script: |
         az login --service-principal -u $(clientId) -p $(clientSecret) --tenant $(tenantId)
         az acr login --name $(acrName)
-        docker build -t $(acrName).azurecr.io/$(imageRepository):$(Build.BuildId) .
+        docker build -f docker/Dockerfile -t $(acrName).azurecr.io/$(imageRepository):$(Build.BuildId) .
         docker push $(acrName).azurecr.io/$(imageRepository):$(Build.BuildId)
       displayName: 'Build and Push Docker Image'
       env:
