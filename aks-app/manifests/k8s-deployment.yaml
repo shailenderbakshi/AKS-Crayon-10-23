@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: aks-app
-        image: <your-acr-name>.azurecr.io/aks-app:$(Build.BuildId)
+        image: notts01.azurecr.io/aks-app:$(Build.BuildId)
         ports:
         - containerPort: 3000
 ---
