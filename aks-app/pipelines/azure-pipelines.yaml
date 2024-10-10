@@ -31,8 +31,8 @@ stages:
         az login --service-principal -u $(clientId) -p $(clientSecret) --tenant $(tenantId)
         az acr login --name $(acrName)
 
-        # Build the Docker image from the /aks-app/src directory
-        docker build -f aks-app/docker/Dockerfile -t $(acrName).azurecr.io/$(imageRepository):$(Build.BuildId) aks-app/src
+        # Set the build context to aks-app so Dockerfile can find src correctly
+        docker build -f aks-app/docker/Dockerfile -t $(acrName).azurecr.io/$(imageRepository):$(Build.BuildId) aks-app
 
         # Verify that the image exists locally
         echo "Listing Docker images to confirm tagging"
@@ -47,4 +47,4 @@ stages:
         docker login $(acrName).azurecr.io -u $(clientId) -p $(clientSecret)
         docker push $(acrName).azurecr.io/$(imageRepository):$(Build.BuildId)
       displayName: 'Push Docker Image to ACR'
-      condition: succeeded()  # Only push if the build step succeeds
+      condition: succeeded()
