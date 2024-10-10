@@ -19,11 +19,17 @@ stages:
     displayName: 'Build Docker image and push to ACR'
     steps:
     - script: |
+        # Verify the current working directory and list files
+        echo "Current working directory:"
+        pwd
+        echo "Listing files in current directory:"
+        ls -al
+
         # Log in to Azure and then ACR
         az login --service-principal -u $(clientId) -p $(clientSecret) --tenant $(tenantId)
         az acr login --name $(acrName)
-        
-        # Build the Docker image
+
+        # Adjust build context to be absolute or relative to ensure 'src' is found
         docker build -f docker/Dockerfile -t $(acrName).azurecr.io/$(imageRepository):$(Build.BuildId) ./src
 
         # Verify that the image exists locally
@@ -34,14 +40,9 @@ stages:
         clientId: $(clientId)
         clientSecret: $(clientSecret)
         tenantId: $(tenantId)
-      
+
     - script: |
-        # Optional: Docker login using ACR credentials
-        echo "Logging into Docker with ACR credentials"
         docker login $(acrName).azurecr.io -u $(clientId) -p $(clientSecret)
-        
-        # Push the Docker image to ACR
-        echo "Pushing Docker image to ACR"
         docker push $(acrName).azurecr.io/$(imageRepository):$(Build.BuildId)
       displayName: 'Push Docker Image to ACR'
-      condition: succeeded()  # Only push if the build step
+      condition: succeeded()  # Only push if the build step succeeds
