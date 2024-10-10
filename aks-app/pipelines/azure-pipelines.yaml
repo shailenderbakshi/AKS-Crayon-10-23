@@ -10,41 +10,40 @@ variables:
   clientId: 'a8594772-7771-44e6-b951-196a1f362afd'       # Service Principal Client ID
   clientSecret: 'kuk8Q~j9A-Jxr6KuBRuwYURM4v2UktscYwEKKaLS' # Service Principal Client Secret
   tenantId: '08cca906-e7b9-4edf-b88a-37c7efbc1422'       # Tenant ID for the Service Principal
+  aksResourceGroup: 'my-resource-group'          # Replace with your AKS resource group name
+  aksClusterName: 'my-aks-cluster'              # Replace with your AKS cluster name
 
 stages:
-- stage: Build
-  displayName: 'Build and Push to ACR'
+- stage: BuildAndDeploy
+  displayName: 'Build, Push, and Deploy to AKS'
   jobs:
   - job: BuildAndPush
-    displayName: 'Build Docker image and push to ACR'
+    displayName: 'Build Docker image, push to ACR, and deploy to AKS'
     steps:
-    - checkout: self  # Ensure the code is checked out at the start
+    - checkout: self
 
     - script: |
-        # Confirm the working directory and its contents
-        echo "Working directory:"
-        pwd
-        echo "Contents of the current directory:"
-        ls -al
-
         # Log in to Azure and ACR
         az login --service-principal -u $(clientId) -p $(clientSecret) --tenant $(tenantId)
         az acr login --name $(acrName)
 
-        # Set the build context to aks-app so Dockerfile can find src correctly
+        # Build and push the Docker image
         docker build -f aks-app/docker/Dockerfile -t $(acrName).azurecr.io/$(imageRepository):$(Build.BuildId) aks-app
-
-        # Verify that the image exists locally
-        echo "Listing Docker images to confirm tagging"
-        docker images | grep $(imageRepository)
-      displayName: 'Build Docker Image'
+        docker push $(acrName).azurecr.io/$(imageRepository):$(Build.BuildId)
+      displayName: 'Build and Push Docker Image'
       env:
         clientId: $(clientId)
         clientSecret: $(clientSecret)
         tenantId: $(tenantId)
 
     - script: |
-        docker login $(acrName).azurecr.io -u $(clientId) -p $(clientSecret)
-        docker push $(acrName).azurecr.io/$(imageRepository):$(Build.BuildId)
-      displayName: 'Push Docker Image to ACR'
+        # Get AKS credentials for kubectl access
+        az aks get-credentials --resource-group $(aksResourceGroup) --name $(aksClusterName)
+        
+        # Update the Kubernetes deployment file with the new image
+        sed -i 's|<image-placeholder>|$(acrName).azurecr.io/$(imageRepository):$(Build.BuildId)|g' aks-app/manifests/k8s-deployment.yaml
+        
+        # Deploy the updated manifest to AKS
+        kubectl apply -f aks-app/manifests/k8s-deployment.yaml
+      displayName: 'Deploy to AKS'
       condition: succeeded()
