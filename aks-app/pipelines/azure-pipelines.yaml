@@ -19,7 +19,7 @@ stages:
     steps:
     - task: Docker@2
       inputs:
-        containerRegistry: 'Crayon-Conn'  # Replace with your Azure Resource Manager service connection for ACR
+        containerRegistry: 'docker-conn'  # Replace with your Azure Resource Manager service connection for ACR
         repository: '$(imageRepository)'
         command: 'buildAndPush'
         Dockerfile: 'docker/Dockerfile'
