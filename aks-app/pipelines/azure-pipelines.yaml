@@ -7,9 +7,9 @@ pool:
 variables:
   acrName: 'notts01'                    # Replace with your actual ACR name
   imageRepository: 'aks-app'            # Name of the repository in ACR
-  clientId: '<your-client-id>'          # Service Principal Client ID
-  clientSecret: '<your-client-secret>'  # Service Principal Client Secret
-  tenantId: '<your-tenant-id>'          # Tenant ID for the Service Principal
+  clientId: 'a8594772-7771-44e6-b951-196a1f362afd'       # Service Principal Client ID
+  clientSecret: 'kuk8Q~j9A-Jxr6KuBRuwYURM4v2UktscYwEKKaLS' # Service Principal Client Secret
+  tenantId: '08cca906-e7b9-4edf-b88a-37c7efbc1422'       # Tenant ID for the Service Principal
 
 stages:
 - stage: Build
