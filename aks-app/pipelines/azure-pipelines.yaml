@@ -24,17 +24,13 @@ stages:
 
 - stage: Deploy
   jobs:
-  - deployment: DeployToAKS
-    environment: 'aks-environment'
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - task: AzureCLI@2
-            inputs:
-              azureSubscription: 'Crayon-Conn'
-              scriptType: 'bash'
-              scriptLocation: 'inlineScript'
-              inlineScript: |
-                az aks get-credentials --resource-group $(aksResourceGroup) --name $(aksClusterName)
-                kubectl apply -f manifests/k8s-deployment.yaml
+  - job: DeployToAKS
+    steps:
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'Crayon-Conn'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az aks get-credentials --resource-group $(aksResourceGroup) --name $(aksClusterName)
+          kubectl apply -f manifests/k8s-deployment.yaml
