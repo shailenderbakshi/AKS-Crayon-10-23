@@ -37,9 +37,12 @@ stages:
         tenantId: $(tenantId)
 
     - script: |
-        # Get AKS credentials for kubectl access
-        az aks get-credentials --resource-group $(aksResourceGroup) --name $(aksClusterName)
+        # Install kubelogin to authenticate with AAD-enabled AKS
+        az aks install-cli
         
+        # Get AKS credentials for kubectl access
+        az aks get-credentials --resource-group $(aksResourceGroup) --name $(aksClusterName) --admin
+
         # Update the Kubernetes deployment file with the new image
         sed -i 's|<image-placeholder>|$(acrName).azurecr.io/$(imageRepository):$(Build.BuildId)|g' aks-app/manifests/k8s-deployment.yaml
         
