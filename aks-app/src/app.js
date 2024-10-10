@@ -1,10 +1,6 @@
 const express = require('express');
 const app = express();
-const port = process.env.PORT || 3000;
-
-app.get('/', (req, res) => {
-  res.send('Hello, AKS!');
-});
+const port = process.env.PORT || 8081;  // Updated to default to 8081
 
 app.listen(port, () => {
   console.log(`App running on port ${port}`);
