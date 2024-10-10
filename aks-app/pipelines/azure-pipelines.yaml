@@ -18,25 +18,21 @@ stages:
   - job: BuildAndPush
     displayName: 'Build Docker image and push to ACR'
     steps:
+    - checkout: self  # Ensure the code is checked out at the start
+
     - script: |
-        # Print the current working directory and its contents
-        echo "Current working directory:"
+        # Confirm the working directory and its contents
+        echo "Working directory:"
         pwd
         echo "Contents of the current directory:"
         ls -al
 
-        # List contents of the directory one level up as well
-        echo "Contents of the parent directory:"
-        ls -al ..
-
-        # Log in to Azure and then ACR
+        # Log in to Azure and ACR
         az login --service-principal -u $(clientId) -p $(clientSecret) --tenant $(tenantId)
         az acr login --name $(acrName)
 
-        # Attempt to build the Docker image with different build contexts based on output
-        docker build -f docker/Dockerfile -t $(acrName).azurecr.io/$(imageRepository):$(Build.BuildId) ./src || \
-        docker build -f docker/Dockerfile -t $(acrName).azurecr.io/$(imageRepository):$(Build.BuildId) ../src || \
-        docker build -f docker/Dockerfile -t $(acrName).azurecr.io/$(imageRepository):$(Build.BuildId) .
+        # Build the Docker image from the /aks-app/src directory
+        docker build -f aks-app/docker/Dockerfile -t $(acrName).azurecr.io/$(imageRepository):$(Build.BuildId) aks-app/src
 
         # Verify that the image exists locally
         echo "Listing Docker images to confirm tagging"
