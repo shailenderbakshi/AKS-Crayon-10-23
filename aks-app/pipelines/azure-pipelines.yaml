@@ -1,5 +1,5 @@
 trigger:
-- none
+- main
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -26,12 +26,15 @@ stages:
   jobs:
   - deployment: DeployToAKS
     environment: 'aks-environment'
-    steps:
-    - task: AzureCLI@2
-      inputs:
-        azureSubscription: 'Crayon-Conn'
-        scriptType: 'bash'
-        scriptLocation: 'inlineScript'
-        inlineScript: |
-          az aks get-credentials --resource-group $(aksResourceGroup) --name $(aksClusterName)
-          kubectl apply -f manifests/k8s-deployment.yaml
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureCLI@2
+            inputs:
+              azureSubscription: '<your-azure-service-connection>'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                az aks get-credentials --resource-group $(aksResourceGroup) --name $(aksClusterName)
+                kubectl apply -f manifests/k8s-deployment.yaml
