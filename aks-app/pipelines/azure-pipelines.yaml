@@ -7,9 +7,9 @@ pool:
 variables:
   acrName: 'notts01'                    # Replace with your actual ACR name
   imageRepository: 'aks-app'            # Name of the repository in ACR
-  clientId: 'a8594772-7771-44e6-b951-196a1f362afd'          # Service Principal Client ID
-  clientSecret: 'kuk8Q~j9A-Jxr6KuBRuwYURM4v2UktscYwEKKaLS'  # Service Principal Client Secret
-  tenantId: '08cca906-e7b9-4edf-b88a-37c7efbc1422'          # Tenant ID for the Service Principal
+  clientId: '<your-client-id>'          # Service Principal Client ID
+  clientSecret: '<your-client-secret>'  # Service Principal Client Secret
+  tenantId: '<your-tenant-id>'          # Tenant ID for the Service Principal
 
 stages:
 - stage: Build
@@ -19,18 +19,24 @@ stages:
     displayName: 'Build Docker image and push to ACR'
     steps:
     - script: |
-        # Verify the current working directory and list files
+        # Print the current working directory and its contents
         echo "Current working directory:"
         pwd
-        echo "Listing files in current directory:"
+        echo "Contents of the current directory:"
         ls -al
+
+        # List contents of the directory one level up as well
+        echo "Contents of the parent directory:"
+        ls -al ..
 
         # Log in to Azure and then ACR
         az login --service-principal -u $(clientId) -p $(clientSecret) --tenant $(tenantId)
         az acr login --name $(acrName)
 
-        # Adjust build context to be absolute or relative to ensure 'src' is found
-        docker build -f docker/Dockerfile -t $(acrName).azurecr.io/$(imageRepository):$(Build.BuildId) ./src
+        # Attempt to build the Docker image with different build contexts based on output
+        docker build -f docker/Dockerfile -t $(acrName).azurecr.io/$(imageRepository):$(Build.BuildId) ./src || \
+        docker build -f docker/Dockerfile -t $(acrName).azurecr.io/$(imageRepository):$(Build.BuildId) ../src || \
+        docker build -f docker/Dockerfile -t $(acrName).azurecr.io/$(imageRepository):$(Build.BuildId) .
 
         # Verify that the image exists locally
         echo "Listing Docker images to confirm tagging"
