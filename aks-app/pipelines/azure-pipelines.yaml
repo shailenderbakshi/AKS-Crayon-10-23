@@ -1,3 +1,4 @@
+# azure-pipelines.yaml
 trigger:
 - main
 
@@ -5,10 +6,11 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  acrName: 'notts01'                   # Name of your Azure Container Registry
-  aksResourceGroup: 'my-resource-group' # Resource group where your AKS cluster is located
-  aksClusterName: 'my-aks-cluster'     # Name of your AKS cluster
-  imageRepository: 'aks-app'                    # Name of the repository in ACR for your app image
+  acrName: 'notts01'  # Name of your Azure Container Registry
+  imageRepository: 'aks-app'  # Name of the repository in ACR
+  clientId: 'a8594772-7771-44e6-b951-196a1f362afd'       # Service Principal Client ID
+  clientSecret: 'kuk8Q~j9A-Jxr6KuBRuwYURM4v2UktscYwEKKaLS' # Service Principal Client Secret
+  tenantId: '08cca906-e7b9-4edf-b88a-37c7efbc1422'       # Tenant ID for the Service Principal
 
 stages:
 - stage: Build
@@ -17,31 +19,13 @@ stages:
   - job: BuildAndPush
     displayName: 'Build Docker image and push to ACR'
     steps:
-    - task: Docker@2
-      inputs:
-        containerRegistry: 'docker-conn1'  # Replace with your Azure Resource Manager service connection for ACR
-        repository: '$(imageRepository)'
-        command: 'buildAndPush'
-        Dockerfile: 'docker/Dockerfile'
-        tags: $(Build.BuildId)
-
-- stage: Deploy
-  displayName: 'Deploy to AKS'
-  jobs:
-  - job: DeployToAKS
-    displayName: 'Deploy app to AKS'
-    steps:
-    - task: AzureCLI@2
-      inputs:
-        azureSubscription: 'Crayon-Conn' # Replace with the same service connection name
-        scriptType: 'bash'
-        scriptLocation: 'inlineScript'
-        inlineScript: |
-          echo "Getting AKS credentials"
-          az aks get-credentials --resource-group $(aksResourceGroup) --name $(aksClusterName)
-          
-          echo "Updating image in Kubernetes manifest"
-          kubectl set image deployment/aks-app aks-app=$(acrName).azurecr.io/$(imageRepository):$(Build.BuildId) --record
-          
-          echo "Applying Kubernetes manifest"
-          kubectl apply -f manifests/k8s-deployment.yaml
+    - script: |
+        az login --service-principal -u $(clientId) -p $(clientSecret) --tenant $(tenantId)
+        az acr login --name $(acrName)
+        docker build -t $(acrName).azurecr.io/$(imageRepository):$(Build.BuildId) .
+        docker push $(acrName).azurecr.io/$(imageRepository):$(Build.BuildId)
+      displayName: 'Build and Push Docker Image'
+      env:
+        clientId: $(clientId)
+        clientSecret: $(clientSecret)
+        tenantId: $(tenantId)
