@@ -28,8 +28,8 @@ stages:
         az acr login --name $(acrName)
 
         # Build and push the Docker image
-        docker build -f aks-app/docker/Dockerfile -t $(acrName).azurecr.io/$(imageRepository):$(Build.BuildId) aks-app
-        docker push $(acrName).azurecr.io/$(imageRepository):$(Build.BuildId)
+        docker build -f aks-app/docker/Dockerfile -t notts01.azurecr.io/aks-app:$(Build.BuildId) aks-app
+        docker push notts01.azurecr.io/aks-app:$(Build.BuildId)
       displayName: 'Build and Push Docker Image'
       env:
         clientId: $(clientId)
