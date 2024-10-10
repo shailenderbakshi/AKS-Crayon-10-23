@@ -28,7 +28,7 @@ stages:
 
         # Verify that the image exists locally
         echo "Listing Docker images to confirm tagging"
-        docker images
+        docker images | grep $(imageRepository)
       displayName: 'Build Docker Image'
       env:
         clientId: $(clientId)
@@ -36,8 +36,12 @@ stages:
         tenantId: $(tenantId)
       
     - script: |
-        # Attempt to push with debug information
-        echo "Attempting to push Docker image to ACR"
-        docker push --debug $(acrName).azurecr.io/$(imageRepository):$(Build.BuildId)
+        # Optional: Docker login using ACR credentials
+        echo "Logging into Docker with ACR credentials"
+        docker login $(acrName).azurecr.io -u $(clientId) -p $(clientSecret)
+        
+        # Push the Docker image to ACR
+        echo "Pushing Docker image to ACR"
+        docker push $(acrName).azurecr.io/$(imageRepository):$(Build.BuildId)
       displayName: 'Push Docker Image to ACR'
-      condition: succeeded()  # Only push if the build step succeeds
+      condition: succeeded()  # Only push if the build step
