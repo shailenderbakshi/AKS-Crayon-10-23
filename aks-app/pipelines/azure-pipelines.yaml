@@ -5,9 +5,9 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  acrName: '<your-acr-name>'
-  aksResourceGroup: '<your-aks-resource-group>'
-  aksClusterName: '<your-aks-cluster-name>'
+  acrName: 'notts01'
+  aksResourceGroup: 'my-resource-group'
+  aksClusterName: 'my-aks-cluster'
 
 stages:
 - stage: Build
@@ -29,7 +29,7 @@ stages:
     steps:
     - task: AzureCLI@2
       inputs:
-        azureSubscription: '<your-azure-service-connection>'
+        azureSubscription: 'Crayon-Conn'
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
