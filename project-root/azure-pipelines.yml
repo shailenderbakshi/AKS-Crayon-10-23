@@ -3,13 +3,13 @@ trigger:
     include:
       - main
 
-# Reference the variable group for sensitive variables
+# Reference the variable group that includes client ID, secret, tenant ID, and subscription ID
 variables:
 - group: 'AKS-Credentials'  # Replace with the name of your variable group
 
   # Define other variables directly here
-  RESOURCE_GROUP: 'my-resource-group2'
-  AKS_CLUSTER_NAME: 'my-aks-cluster2'
+  RESOURCE_GROUP: 'your-resource-group'
+  AKS_CLUSTER_NAME: 'your-aks-cluster'
 
 stages:
   - stage: Deploy
@@ -25,15 +25,18 @@ stages:
               helmVersion: 'latest'
 
           - script: |
-              # Login to Azure using Service Principal
+              # Login to Azure using Service Principal and set subscription context
               az login --service-principal \
                 --username $(AZURE_CLIENT_ID) \
                 --password $(AZURE_CLIENT_SECRET) \
                 --tenant $(AZURE_TENANT_ID)
 
+              # Set the subscription context using the subscription ID from the variable group
+              az account set --subscription $(AZURE_SUBSCRIPTION_ID)
+
               # Get AKS credentials
               az aks get-credentials --resource-group $(RESOURCE_GROUP) --name $(AKS_CLUSTER_NAME)
-            displayName: "Azure CLI Login and Get AKS Credentials"
+            displayName: "Azure CLI Login, Set Subscription, and Get AKS Credentials"
 
           - script: |
               # Add Helm repositories
