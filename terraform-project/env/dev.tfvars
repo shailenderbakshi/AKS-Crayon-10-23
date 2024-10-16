@@ -7,7 +7,7 @@ default_node_pool_vm_size = "Standard_D4s_v3"
 service_cidr              = "10.1.0.0/16"
 dns_service_ip            = "10.1.0.10"
 docker_bridge_cidr        = "172.17.0.1/16"
-admin_group_object_id     = "411c37d2-f168-4870-8900-acf689bfcfd5"
+admin_group_object_id     = "ebf55edb-3a9a-4f93-a8d7-a34e06ebbdb8"
 
 # Resource Group and Location
 resource_group_name = "my-resource-group2"
