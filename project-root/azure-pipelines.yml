@@ -51,13 +51,18 @@ stages:
             displayName: "Create Namespace"
 
           - script: |
-              # Deploy Prometheus
-              helm install prometheus prometheus-community/prometheus --namespace monitoring -f helm/prometheus/values-prometheus.yaml
+              # List files to verify if the values file exists in the expected path
+              ls -la project-root/helm/prometheus/
+            displayName: "Verify Prometheus Values File"
+
+          - script: |
+              # Deploy Prometheus using the values file with full path
+              helm install prometheus prometheus-community/prometheus --namespace monitoring -f project-root/helm/prometheus/values-prometheus.yaml
             displayName: "Deploy Prometheus"
 
           - script: |
-              # Deploy Grafana
-              helm install grafana grafana/grafana --namespace monitoring -f helm/grafana/values-grafana.yaml \
+              # Deploy Grafana using the values file with full path
+              helm install grafana grafana/grafana --namespace monitoring -f project-root/helm/grafana/values-grafana.yaml \
                 --set service.type=LoadBalancer
             displayName: "Deploy Grafana"
 
