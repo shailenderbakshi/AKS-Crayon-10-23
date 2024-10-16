@@ -25,10 +25,9 @@ stages:
             displayName: "Install Helm"
 
           - script: |
-              # Install kubelogin required for AAD integration
-              sudo az aks install-cli
-              sudo apt-get install -y kubelogin
-            displayName: "Install kubelogin"
+              # Install kubectl and kubelogin for AAD integration with AKS
+              az aks install-cli
+            displayName: "Install kubectl and kubelogin"
 
           - script: |
               # Login to Azure using Service Principal and set subscription context
