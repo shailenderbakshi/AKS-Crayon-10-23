@@ -5,9 +5,9 @@ trigger:
 
 # Reference the variable group that includes client ID, secret, tenant ID, and subscription ID
 variables:
-- group: 'AKS-Credentials'  # Replace with the name of your variable group
+  - group: 'AKS-Credentials'  # Replace with the name of your variable group
 
-  # Define other variables directly here
+  # Define other variables directly here (not indented)
   RESOURCE_GROUP: 'my-resource-group2'
   AKS_CLUSTER_NAME: 'my-aks-cluster2'
 
