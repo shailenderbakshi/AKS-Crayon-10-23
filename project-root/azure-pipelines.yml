@@ -3,11 +3,9 @@ trigger:
     include:
       - main
 
-# Reference the variable group that includes client ID, secret, tenant ID, and subscription ID
+# Define variables
 variables:
   - group: 'AKS-Credentials'  # Replace with the name of your variable group
-
-  # Define other variables directly here (not indented)
   RESOURCE_GROUP: 'my-resource-group2'
   AKS_CLUSTER_NAME: 'my-aks-cluster2'
 
@@ -48,20 +46,4 @@ stages:
           - script: |
               # Create namespace if it doesn't exist
               kubectl create namespace monitoring || true
-            displayName: "Create Namespace"
-
-          - script: |
-              # Deploy Prometheus
-              helm install prometheus prometheus-community/prometheus --namespace monitoring -f helm/prometheus/values-prometheus.yaml
-            displayName: "Deploy Prometheus"
-
-          - script: |
-              # Deploy Grafana
-              helm install grafana grafana/grafana --namespace monitoring -f helm/grafana/values-grafana.yaml \
-                --set service.type=LoadBalancer
-            displayName: "Deploy Grafana"
-
-          - script: |
-              # Display Grafana service details
-              kubectl get svc --namespace monitoring -o wide
-            displayName: "Get Grafana Service Details"
+            displayName: "Cre
