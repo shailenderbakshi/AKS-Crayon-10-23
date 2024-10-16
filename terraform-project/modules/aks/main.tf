@@ -28,11 +28,5 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   tags = var.tags
 
-  # Add a provisioner to grant cluster-admin role to a specific user after AKS is created
-  provisioner "local-exec" {
-    command = <<EOF
-      az aks get-credentials --resource-group ${self.resource_group_name} --name ${self.name}
-      kubectl create clusterrolebinding admin-access-binding --clusterrole=cluster-admin --user=adm-shailender@crayonuk.tech
-    EOF
-  }
+  
 }
