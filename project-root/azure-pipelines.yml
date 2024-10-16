@@ -8,8 +8,8 @@ variables:
 - group: 'AKS-Credentials'  # Replace with the name of your variable group
 
   # Define other variables directly here
-  RESOURCE_GROUP: 'your-resource-group'
-  AKS_CLUSTER_NAME: 'your-aks-cluster'
+  RESOURCE_GROUP: 'my-resource-group2'
+  AKS_CLUSTER_NAME: 'my-aks-cluster2'
 
 stages:
   - stage: Deploy
