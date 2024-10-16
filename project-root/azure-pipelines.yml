@@ -4,7 +4,7 @@ trigger:
       - main
 
 variables:
-  - group: 'AKS-Credentials'  # Replace with the name of your variable group
+  - group: 'AKS-Credentials'
   - name: RESOURCE_GROUP
     value: 'my-resource-group2'
   - name: AKS_CLUSTER_NAME
@@ -25,6 +25,12 @@ stages:
             displayName: "Install Helm"
 
           - script: |
+              # Install kubelogin required for AAD integration
+              sudo az aks install-cli
+              sudo apt-get install -y kubelogin
+            displayName: "Install kubelogin"
+
+          - script: |
               # Login to Azure using Service Principal and set subscription context
               az login --service-principal \
                 --username $(AZURE_CLIENT_ID) \
@@ -34,8 +40,8 @@ stages:
               # Set the subscription context using the subscription ID from the variable group
               az account set --subscription $(AZURE_SUBSCRIPTION_ID)
 
-              # Get AKS credentials
-              az aks get-credentials --resource-group $(RESOURCE_GROUP) --name $(AKS_CLUSTER_NAME)
+              # Get AKS credentials, using kubelogin for AAD
+              az aks get-credentials --resource-group $(RESOURCE_GROUP) --name $(AKS_CLUSTER_NAME) --admin
             displayName: "Azure CLI Login, Set Subscription, and Get AKS Credentials"
 
           - script: |
@@ -51,17 +57,12 @@ stages:
             displayName: "Create Namespace"
 
           - script: |
-              # List files to verify if the values file exists in the expected path
-              ls -la project-root/helm/prometheus/
-            displayName: "Verify Prometheus Values File"
-
-          - script: |
-              # Deploy Prometheus using the values file with full path
+              # Deploy Prometheus using the values file
               helm install prometheus prometheus-community/prometheus --namespace monitoring -f project-root/helm/prometheus/values-prometheus.yaml
             displayName: "Deploy Prometheus"
 
           - script: |
-              # Deploy Grafana using the values file with full path
+              # Deploy Grafana using the values file
               helm install grafana grafana/grafana --namespace monitoring -f project-root/helm/grafana/values-grafana.yaml \
                 --set service.type=LoadBalancer
             displayName: "Deploy Grafana"
