@@ -5,10 +5,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
   dns_prefix          = var.dns_prefix
 
   default_node_pool {
-    name       = var.default_node_pool_name
-    node_count = var.default_node_pool_count
-    vm_size    = var.default_node_pool_vm_size
-    vnet_subnet_id = var.subnet_id  # Attach AKS to the existing VNet
+    name            = var.default_node_pool_name
+    node_count      = var.default_node_pool_count
+    vm_size         = var.default_node_pool_vm_size
+    vnet_subnet_id  = var.subnet_id  # Attach AKS to the existing VNet
   }
 
   identity {
@@ -27,4 +27,12 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   tags = var.tags
+
+  # Add a provisioner to grant cluster-admin role to a specific user after AKS is created
+  provisioner "local-exec" {
+    command = <<EOF
+      az aks get-credentials --resource-group ${self.resource_group_name} --name ${self.name}
+      kubectl create clusterrolebinding admin-access-binding --clusterrole=cluster-admin --user=adm-shailender@crayonuk.tech
+    EOF
+  }
 }
