@@ -19,9 +19,10 @@ stages:
           vmImage: 'ubuntu-latest'
 
         steps:
-          - task: UseHelmInstaller@1
-            inputs:
-              helmVersion: 'latest'
+          - script: |
+              # Install Helm if not available
+              curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+            displayName: "Install Helm"
 
           - script: |
               # Login to Azure using Service Principal and set subscription context
