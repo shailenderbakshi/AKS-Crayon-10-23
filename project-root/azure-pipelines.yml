@@ -1,0 +1,64 @@
+trigger:
+  branches:
+    include:
+      - main
+
+# Reference the variable group for sensitive variables
+variables:
+- group: 'AKS-Credentials'  # Replace with the name of your variable group
+
+  # Define other variables directly here
+  RESOURCE_GROUP: 'your-resource-group'
+  AKS_CLUSTER_NAME: 'your-aks-cluster'
+
+stages:
+  - stage: Deploy
+    jobs:
+      - job: Deploy_Prometheus_Grafana
+        displayName: "Deploy Prometheus and Grafana"
+        pool:
+          vmImage: 'ubuntu-latest'
+
+        steps:
+          - task: UseHelmInstaller@1
+            inputs:
+              helmVersion: 'latest'
+
+          - script: |
+              # Login to Azure using Service Principal
+              az login --service-principal \
+                --username $(AZURE_CLIENT_ID) \
+                --password $(AZURE_CLIENT_SECRET) \
+                --tenant $(AZURE_TENANT_ID)
+
+              # Get AKS credentials
+              az aks get-credentials --resource-group $(RESOURCE_GROUP) --name $(AKS_CLUSTER_NAME)
+            displayName: "Azure CLI Login and Get AKS Credentials"
+
+          - script: |
+              # Add Helm repositories
+              helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+              helm repo add grafana https://grafana.github.io/helm-charts
+              helm repo update
+            displayName: "Add Helm Repositories"
+
+          - script: |
+              # Create namespace if it doesn't exist
+              kubectl create namespace monitoring || true
+            displayName: "Create Namespace"
+
+          - script: |
+              # Deploy Prometheus
+              helm install prometheus prometheus-community/prometheus --namespace monitoring -f helm/prometheus/values-prometheus.yaml
+            displayName: "Deploy Prometheus"
+
+          - script: |
+              # Deploy Grafana
+              helm install grafana grafana/grafana --namespace monitoring -f helm/grafana/values-grafana.yaml \
+                --set service.type=LoadBalancer
+            displayName: "Deploy Grafana"
+
+          - script: |
+              # Display Grafana service details
+              kubectl get svc --namespace monitoring -o wide
+            displayName: "Get Grafana Service Details"
