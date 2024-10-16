@@ -1,5 +1,5 @@
 # AKS Cluster Variables
-aks_name                  = "my-aks-cluster"
+aks_name                  = "my-aks-cluster2"
 dns_prefix                = "myaks"
 default_node_pool_name    = "default"
 default_node_pool_count   = 3
@@ -10,7 +10,7 @@ docker_bridge_cidr        = "172.17.0.1/16"
 admin_group_object_id     = "411c37d2-f168-4870-8900-acf689bfcfd5"
 
 # Resource Group and Location
-resource_group_name = "my-resource-group"
+resource_group_name = "my-resource-group2"
 location            = "East US"
 
 # Log Analytics Variables
