@@ -13,8 +13,8 @@ variables:
 stages:
   - stage: Deploy
     jobs:
-      - job: Deploy_Prometheus_Grafana
-        displayName: "Deploy Prometheus and Grafana"
+      - job: Deploy_Prometheus_Grafana_Kubecost
+        displayName: "Deploy Prometheus, Grafana, and Kubecost"
         pool:
           vmImage: 'ubuntu-latest'
 
@@ -47,6 +47,7 @@ stages:
               # Add Helm repositories
               helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
               helm repo add grafana https://grafana.github.io/helm-charts
+              helm repo add kubecost https://kubecost.github.io/cost-analyzer/
               helm repo update
             displayName: "Add Helm Repositories"
 
@@ -67,6 +68,12 @@ stages:
             displayName: "Deploy Grafana"
 
           - script: |
-              # Display Grafana service details
+              # Deploy Kubecost for cost monitoring in the monitoring namespace
+              helm install kubecost kubecost/cost-analyzer --namespace monitoring --set kubecostToken="your_kubecost_token" \
+                --set service.type=LoadBalancer
+            displayName: "Deploy Kubecost"
+
+          - script: |
+              # Display Grafana and Kubecost service details
               kubectl get svc --namespace monitoring -o wide
-            displayName: "Get Grafana Service Details"
+            displayName: "Get Service Details"
