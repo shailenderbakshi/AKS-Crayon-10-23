@@ -1,3 +1,4 @@
+# Deployment for AKS App
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -19,3 +20,18 @@ spec:
         - containerPort: 8081
       imagePullSecrets:
       - name: acr-secret  # Reference the secret created above
+
+---
+# Service to expose AKS App externally
+apiVersion: v1
+kind: Service
+metadata:
+  name: aks-app-service
+spec:
+  selector:
+    app: aks-app  # This connects the service to the deployment
+  ports:
+    - protocol: TCP
+      port: 8081         # Port on which the service will be exposed
+      targetPort: 8081   # Port on the container that the service should forward traffic to
+  type: LoadBalancer     # Exposes the service externally with a public IP
