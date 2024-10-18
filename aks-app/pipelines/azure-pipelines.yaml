@@ -22,9 +22,13 @@ stages:
         az login --service-principal -u $(AZURE_CLIENT_ID) -p $(AZURE_CLIENT_SECRET) --tenant $(AZURE_TENANT_ID)
         az acr login --name $(acrName)
 
-        # Build and push the Docker image
+        # Build and tag the Docker image with both Build ID and 'latest'
         docker build -f aks-app/docker/Dockerfile -t $(acrName).azurecr.io/$(imageRepository):$(Build.BuildId) aks-app
+        docker tag $(acrName).azurecr.io/$(imageRepository):$(Build.BuildId) $(acrName).azurecr.io/$(imageRepository):latest
+
+        # Push both tags to ACR (Build ID and 'latest')
         docker push $(acrName).azurecr.io/$(imageRepository):$(Build.BuildId)
+        docker push $(acrName).azurecr.io/$(imageRepository):latest
       displayName: 'Build and Push Docker Image'
 
     - script: |
@@ -34,8 +38,8 @@ stages:
         # Get AKS credentials for kubectl access
         az aks get-credentials --resource-group $(aksResourceGroup) --name $(aksClusterName) --admin
 
-        # Update the Kubernetes deployment file with the new image
-        sed -i 's|<image-placeholder>|$(acrName).azurecr.io/$(imageRepository):$(Build.BuildId)|g' aks-app/manifests/k8s-deployment.yaml
+        # Update the Kubernetes deployment file with the new 'latest' image tag
+        sed -i 's|<image-placeholder>|$(acrName).azurecr.io/$(imageRepository):latest|g' aks-app/manifests/k8s-deployment.yaml
         
         # Deploy the updated manifest to AKS
         kubectl apply -f aks-app/manifests/k8s-deployment.yaml
