@@ -4,12 +4,9 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+# Link to the variable group containing the sensitive credentials, including acrName
 variables:
-  acrName: 'notts01'                    # Replace with your actual ACR name
-  imageRepository: 'aks-app'            # Name of the repository in ACR
-  clientId: 'a8594772-7771-44e6-b951-196a1f362afd'       # Service Principal Client ID
-  clientSecret: 'kuk8Q~j9A-Jxr6KuBRuwYURM4v2UktscYwEKKaLS' # Service Principal Client Secret
-  tenantId: '08cca906-e7b9-4edf-b88a-37c7efbc1422'       # Tenant ID for the Service Principal
+- group: AKS-Credentials  # Assuming your variable group is still called AKS-Credentials
 
 stages:
 - stage: Build
@@ -27,8 +24,8 @@ stages:
         echo "Contents of the current directory:"
         ls -al
 
-        # Log in to Azure and ACR
-        az login --service-principal -u $(clientId) -p $(clientSecret) --tenant $(tenantId)
+        # Log in to Azure and ACR using credentials from the variable group
+        az login --service-principal -u $(AZURE_CLIENT_ID) -p $(AZURE_CLIENT_SECRET) --tenant $(AZURE_TENANT_ID)
         az acr login --name $(acrName)
 
         # Set the build context to aks-app so Dockerfile can find src correctly
@@ -38,13 +35,9 @@ stages:
         echo "Listing Docker images to confirm tagging"
         docker images | grep $(imageRepository)
       displayName: 'Build Docker Image'
-      env:
-        clientId: $(clientId)
-        clientSecret: $(clientSecret)
-        tenantId: $(tenantId)
 
     - script: |
-        docker login $(acrName).azurecr.io -u $(clientId) -p $(clientSecret)
+        docker login $(acrName).azurecr.io -u $(AZURE_CLIENT_ID) -p $(AZURE_CLIENT_SECRET)
         docker push $(acrName).azurecr.io/$(imageRepository):$(Build.BuildId)
       displayName: 'Push Docker Image to ACR'
       condition: succeeded()
