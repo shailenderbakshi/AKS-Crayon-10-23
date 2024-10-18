@@ -20,7 +20,7 @@ steps:
     backendAzureRmResourceGroupName: 'myStorageResourceGroup'  # Resource group for backend
     backendAzureRmStorageAccountName: 'terracount020304'  # Storage account name
     backendAzureRmContainerName: 'tfstate'  # Container for state file
-    backendAzureRmKey: 'terraform.tfstate'  # Name of the state file
+    backendAzureRmKey: 'terraform-adding-aks.tfstate'  # Name of the state file
     workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-project'  # Ensure this points to where your Terraform configs are
 
 # Step 3: Run Terraform Plan
