@@ -1,9 +1,10 @@
+# Deployment for AKS App
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: aks-app
 spec:
-  replicas: 2
+  replicas: 2  # Number of pods
   selector:
     matchLabels:
       app: aks-app
@@ -14,6 +15,23 @@ spec:
     spec:
       containers:
       - name: aks-app
-        image: notts01.azurecr.io/aks-app:latest  # Replace <new-tag> with the latest tag
+        image: notts01.azurecr.io/aks-app:latest  # Ensure this tag exists in ACR
         ports:
         - containerPort: 8081
+      imagePullSecrets:
+      - name: acr-secret  # Ensure this is set up if your ACR requires authentication
+
+---
+# Service to expose AKS App
+apiVersion: v1
+kind: Service
+metadata:
+  name: aks-app-service
+spec:
+  selector:
+    app: aks-app  # This connects the service to the deployment
+  ports:
+    - protocol: TCP
+      port: 8081         # Port on which the service will be exposed
+      targetPort: 8081   # Port on the container that the service should forward traffic to
+  type: LoadBalancer     # Use LoadBalancer to expose externally, or ClusterIP for internal access
