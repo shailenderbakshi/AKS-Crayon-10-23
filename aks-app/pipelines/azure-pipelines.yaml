@@ -4,14 +4,9 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+# Link to the variable group containing the sensitive credentials and other necessary variables
 variables:
-  acrName: 'notts01'                    # Replace with your actual ACR name
-  imageRepository: 'aks-app'            # Name of the repository in ACR
-  clientId: 'a8594772-7771-44e6-b951-196a1f362afd'       # Service Principal Client ID
-  clientSecret: 'kuk8Q~j9A-Jxr6KuBRuwYURM4v2UktscYwEKKaLS' # Service Principal Client Secret
-  tenantId: '08cca906-e7b9-4edf-b88a-37c7efbc1422'       # Tenant ID for the Service Principal
-  aksResourceGroup: 'my-resource-group'          # Replace with your AKS resource group name
-  aksClusterName: 'my-aks-cluster'              # Replace with your AKS cluster name
+- group: AKS-Credentials   # Replace with the actual name of your variable group
 
 stages:
 - stage: BuildAndDeploy
@@ -23,18 +18,14 @@ stages:
     - checkout: self
 
     - script: |
-        # Log in to Azure and ACR
-        az login --service-principal -u $(clientId) -p $(clientSecret) --tenant $(tenantId)
+        # Log in to Azure and ACR using credentials from the variable group
+        az login --service-principal -u $(AZURE_CLIENT_ID) -p $(AZURE_CLIENT_SECRET) --tenant $(AZURE_TENANT_ID)
         az acr login --name $(acrName)
 
         # Build and push the Docker image
-        docker build -f aks-app/docker/Dockerfile -t notts01.azurecr.io/aks-app:$(Build.BuildId) aks-app
-        docker push notts01.azurecr.io/aks-app:$(Build.BuildId)
+        docker build -f aks-app/docker/Dockerfile -t $(acrName).azurecr.io/$(imageRepository):$(Build.BuildId) aks-app
+        docker push $(acrName).azurecr.io/$(imageRepository):$(Build.BuildId)
       displayName: 'Build and Push Docker Image'
-      env:
-        clientId: $(clientId)
-        clientSecret: $(clientSecret)
-        tenantId: $(tenantId)
 
     - script: |
         # Install kubelogin to authenticate with AAD-enabled AKS
