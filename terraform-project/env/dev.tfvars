@@ -1,5 +1,5 @@
 # AKS Cluster Variables
-aks_name                  = "my-aks-cluster"
+aks_name                  = "my-aks-cluster-dev"
 dns_prefix                = "myaks"
 default_node_pool_name    = "default"
 default_node_pool_count   = 3
