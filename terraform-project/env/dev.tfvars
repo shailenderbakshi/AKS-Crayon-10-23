@@ -1,6 +1,6 @@
 # AKS Cluster Variables
 aks_name                  = "my-aks-cluster-dev"
-dns_prefix                = "myaks"
+dns_prefix                = "myaksdev"
 default_node_pool_name    = "default"
 default_node_pool_count   = 3
 default_node_pool_vm_size = "Standard_D4s_v3"
@@ -10,7 +10,7 @@ docker_bridge_cidr        = "172.17.0.1/16"
 admin_group_object_id     = "411c37d2-f168-4870-8900-acf689bfcfd5"
 
 # Resource Group and Location
-resource_group_name = "my-resource-group"
+resource_group_name = "manifest-resource-group"
 location            = "East US"
 
 # Log Analytics Variables
