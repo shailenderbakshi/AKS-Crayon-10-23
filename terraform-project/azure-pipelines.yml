@@ -7,8 +7,8 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  resourceGroupName: 'my-resource-group'      # Your AKS resource group
-  aksClusterName: 'my-aks-cluster'            # Your AKS cluster name
+  resourceGroupName: 'manifest-resource-group'      # Your AKS resource group
+  aksClusterName: 'my-aks-cluster-dev'            # Your AKS cluster name
   kubernetesNamespace: 'default'              # Namespace for deployment
 
 steps:
