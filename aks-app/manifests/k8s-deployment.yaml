@@ -18,8 +18,6 @@ spec:
         image: notts01.azurecr.io/aks-app:latest  # Ensure this tag exists in ACR
         ports:
         - containerPort: 8081
-      imagePullSecrets:
-      - name: acr-secret  # Ensure this is set up if your ACR requires authentication
 
 ---
 # Service to expose AKS App
