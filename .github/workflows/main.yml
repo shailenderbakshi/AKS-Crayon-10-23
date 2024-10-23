@@ -1,50 +1,62 @@
 name: Terraform Pipeline
 
-# Trigger the workflow only on pushes to the 'main' branch
 on:
   push:
     branches:
-      - main  # You can modify this as needed
+      - main
 
 jobs:
   terraform:
-    runs-on: ubuntu-latest  # Use the latest Ubuntu image for the workflow
+    runs-on: ubuntu-latest
 
     steps:
       # Step 1: Checkout the code
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      # Step 2: Log in to Azure using the service principal stored in GitHub Secrets
+      # Step 2: Log in to Azure using credentials from the JSON secret
       - name: Azure Login
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          creds: |
+            {
+              "clientId": "${{ fromJson(secrets.DEPLOYMENT_CONFIG).AZURE_CLIENT_ID }}",
+              "clientSecret": "${{ fromJson(secrets.DEPLOYMENT_CONFIG).AZURE_CLIENT_SECRET }}",
+              "subscriptionId": "${{ fromJson(secrets.DEPLOYMENT_CONFIG).AZURE_SUBSCRIPTION_ID }}",
+              "tenantId": "${{ fromJson(secrets.DEPLOYMENT_CONFIG).AZURE_TENANT_ID }}"
+            }
 
-      # Step 3: Install Terraform (using hashicorp/setup-terraform action)
+      # Step 3: Install Terraform
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.5.0  # Specify the version of Terraform
+          terraform_version: 1.5.0
 
-      # Step 4: Initialize Terraform with backend configuration (updated storage account name)
+      # Step 4: Initialize Terraform with backend configuration
       - name: Terraform Init
         run: |
           terraform init \
-            -backend-config="resource_group_name=myStorageResourceGroup" \
-            -backend-config="storage_account_name=terracount0203" \  # Updated storage account name
+            -backend-config="resource_group_name=${{ fromJson(secrets.DEPLOYMENT_CONFIG).aksResourceGroup }}" \
+            -backend-config="storage_account_name=terracount0203" \
             -backend-config="container_name=tfstate" \
             -backend-config="key=terraform.tfstate"
-        working-directory: terraform-project  # Ensure this points to where your Terraform configs are
+        working-directory: terraform-project
 
       # Step 5: Run Terraform Plan
       - name: Terraform Plan
         run: |
           terraform plan -var-file=env/dev.tfvars -out=tfplan
-        working-directory: terraform-project  # Ensure this points to where your Terraform configs are
+        working-directory: terraform-project
 
       # Step 6: Apply Terraform changes
       - name: Terraform Apply
         run: |
           terraform apply -auto-approve tfplan
-        working-directory: terraform-project  # Ensure this points to where your Terraform configs are
+        working-directory: terraform-project
+
+      # Step 7: Print Values from the JSON Secret (Optional)
+      - name: Print Variables
+        run: |
+          echo "ACR Name is ${{ fromJson(secrets.DEPLOYMENT_CONFIG).acrName }}"
+          echo "AKS Cluster Name is ${{ fromJson(secrets.DEPLOYMENT_CONFIG).aksClusterName }}"
+          echo "Image Repository is ${{ fromJson(secrets.DEPLOYMENT_CONFIG).imageRepository }}"
