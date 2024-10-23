@@ -1,52 +1,52 @@
-name: Terraform
+name: Terraform Deployment
 
 on:
   push:
     branches:
-      - main  # Adjust this to the branch you want to trigger the action on
-
-permissions:
-  id-token: write  # This grants the workflow the necessary permission to request an OIDC token
-  contents: read   # This is required to read the repository contents
+      - main
 
 jobs:
   terraform:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        auth-type: secret  # Specify the auth-type to use client secrets
 
-      - name: Install Terraform
-        run: |
-          sudo apt-get update && sudo apt-get install -y terraform
+    - name: Install Terraform
+      run: |
+        sudo apt-get update && sudo apt-get install -y gnupg software-properties-common curl
+        curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+        sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+        sudo apt-get update && sudo apt-get install terraform=1.5.0
 
-      - name: Terraform Init
-        run: |
-          terraform init \
+    - name: Terraform Init
+      run: |
+        terraform init \
           -backend-config="resource_group_name=myStorageResourceGroup" \
           -backend-config="storage_account_name=terracount0203" \
           -backend-config="container_name=tfstate" \
           -backend-config="key=terraform.tfstate"
-        env:
-          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-        working-directory: terraform-project
+      env:
+        ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      working-directory: terraform-project
 
-      - name: Terraform Apply
-        run: |
-          terraform apply -var="client_id=${{ secrets.AZURE_CLIENT_ID }}" \
+    - name: Terraform Apply
+      run: |
+        terraform apply -var="client_id=${{ secrets.AZURE_CLIENT_ID }}" \
           -var="client_secret=${{ secrets.AZURE_CLIENT_SECRET }}" \
           -var="tenant_id=${{ secrets.AZURE_TENANT_ID }}" \
           -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
           -auto-approve
-        working-directory: terraform-project
+      working-directory: terraform-project
