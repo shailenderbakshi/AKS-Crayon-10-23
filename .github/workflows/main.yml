@@ -26,13 +26,23 @@ jobs:
               "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
             }
 
-      # Step 3: Install Terraform
+      # Step 3: Set environment variables for Terraform authentication
+      - name: Set environment variables
+        run: |
+          echo "Setting up environment variables for service principal authentication"
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+      # Step 4: Install Terraform
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.5.0
 
-      # Step 4: Initialize Terraform with backend configuration
+      # Step 5: Initialize Terraform with backend configuration
       - name: Terraform Init
         run: |
           terraform init \
@@ -42,22 +52,14 @@ jobs:
             -backend-config="key=terraform.tfstate"
         working-directory: terraform-project
 
-      # Step 5: Run Terraform Plan
+      # Step 6: Run Terraform Plan
       - name: Terraform Plan
         run: |
           terraform plan -var-file=env/dev.tfvars -out=tfplan
         working-directory: terraform-project
 
-      # Step 6: Apply Terraform changes
+      # Step 7: Apply Terraform changes
       - name: Terraform Apply
         run: |
           terraform apply -auto-approve tfplan
         working-directory: terraform-project
-
-      # Step 7: Optional - Print out variables for debugging
-      - name: Print Variables
-        run: |
-          echo "ACR Name is ${{ fromJson(secrets.DEPLOYMENT_CONFIG).acrName }}"
-          echo "AKS Cluster Name is ${{ fromJson(secrets.DEPLOYMENT_CONFIG).aksClusterName }}"
-          echo "AKS Resource Group is ${{ fromJson(secrets.DEPLOYMENT_CONFIG).aksResourceGroup }}"
-          echo "Image Repository is ${{ fromJson(secrets.DEPLOYMENT_CONFIG).imageRepository }}"
