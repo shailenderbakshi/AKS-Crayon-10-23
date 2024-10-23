@@ -36,7 +36,7 @@ jobs:
           -backend-config="resource_group_name=myStorageResourceGroup" \
           -backend-config="storage_account_name=terracount0203" \
           -backend-config="container_name=tfstate" \
-          -backend-config="key=terraform.tfstate"
+          -backend-config="key=aks-terraform.tfstate"
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
