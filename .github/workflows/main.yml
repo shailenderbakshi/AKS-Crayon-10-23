@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+permissions:
+  id-token: write  # This gives permission to use OIDC tokens
+  contents: read
+
 jobs:
   terraform:
     runs-on: ubuntu-latest
