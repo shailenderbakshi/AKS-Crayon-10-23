@@ -5,6 +5,10 @@ on:
     branches:
       - main  # Adjust this to the branch you want to trigger the action on
 
+permissions:
+  id-token: write  # This grants the workflow the necessary permission to request an OIDC token
+  contents: read   # This is required to read the repository contents
+
 jobs:
   terraform:
     runs-on: ubuntu-latest
