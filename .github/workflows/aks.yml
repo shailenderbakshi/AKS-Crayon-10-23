@@ -1,4 +1,4 @@
-name: Azure Terraform Deployment
+name: AKS Deployment
 
 on:
   push:
