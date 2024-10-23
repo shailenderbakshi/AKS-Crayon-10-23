@@ -1,4 +1,4 @@
-name: Terraform Pipeline
+name: Test Azure Login
 
 on:
   push:
@@ -6,15 +6,13 @@ on:
       - main
 
 jobs:
-  terraform:
+  login-test:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the code
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Step 2: Log in to Azure using stored secrets
       - name: Azure Login
         uses: azure/login@v1
         with:
@@ -26,11 +24,5 @@ jobs:
               "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
             }
 
-      # Step 3: Run Terraform steps
-      - name: Terraform Init
-        run: |
-          terraform init \
-            -backend-config="resource_group_name=myResourceGroup" \
-            -backend-config="storage_account_name=terracount0203" \
-            -backend-config="container_name=tfstate" \
-            -backend-config="key=terraform.tfstate"
+      - name: Verify Subscription
+        run: az account show
