@@ -19,7 +19,7 @@ jobs:
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
         client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        auth-type: secret  # Specify the auth-type to use client secrets
+        auth-type: SERVICE_PRINCIPAL  # Specify the auth-type as SERVICE_PRINCIPAL
 
     - name: Install Terraform
       run: |
