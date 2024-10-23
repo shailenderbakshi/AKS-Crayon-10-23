@@ -23,6 +23,7 @@ storage_account_name = "snottaccount01020304"
 account_tier         = "Standard"
 replication_type     = "LRS"
 
+
 # VNet Variables
 vnet_name             = "my-vnet"
 vnet_address_space    = ["10.0.0.0/16"]
