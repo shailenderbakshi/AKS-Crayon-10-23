@@ -1,4 +1,4 @@
-name: Test Azure Login
+name: Terraform Pipeline
 
 on:
   push:
@@ -6,13 +6,15 @@ on:
       - main
 
 jobs:
-  login-test:
+  terraform:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout the code
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # Step 2: Log in to Azure using individual secrets
       - name: Azure Login
         uses: azure/login@v1
         with:
@@ -24,5 +26,38 @@ jobs:
               "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
             }
 
-      - name: Verify Subscription
-        run: az account show
+      # Step 3: Install Terraform
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.0
+
+      # Step 4: Initialize Terraform with backend configuration
+      - name: Terraform Init
+        run: |
+          terraform init \
+            -backend-config="resource_group_name=myStorageResourceGroup" \
+            -backend-config="storage_account_name=terracount0203" \
+            -backend-config="container_name=tfstate" \
+            -backend-config="key=terraform.tfstate"
+        working-directory: terraform-project
+
+      # Step 5: Run Terraform Plan
+      - name: Terraform Plan
+        run: |
+          terraform plan -var-file=env/dev.tfvars -out=tfplan
+        working-directory: terraform-project
+
+      # Step 6: Apply Terraform changes
+      - name: Terraform Apply
+        run: |
+          terraform apply -auto-approve tfplan
+        working-directory: terraform-project
+
+      # Step 7: Optional - Print out variables for debugging
+      - name: Print Variables
+        run: |
+          echo "ACR Name is ${{ fromJson(secrets.DEPLOYMENT_CONFIG).acrName }}"
+          echo "AKS Cluster Name is ${{ fromJson(secrets.DEPLOYMENT_CONFIG).aksClusterName }}"
+          echo "AKS Resource Group is ${{ fromJson(secrets.DEPLOYMENT_CONFIG).aksResourceGroup }}"
+          echo "Image Repository is ${{ fromJson(secrets.DEPLOYMENT_CONFIG).imageRepository }}"
