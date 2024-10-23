@@ -1,4 +1,4 @@
-name: Test Azure Login
+name: Azure Terraform Deployment
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  login-test:
+  terraform-deployment:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,5 +23,36 @@ jobs:
               "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
               "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
             }
+
       - name: Verify Subscription
         run: az account show
+
+      - name: Install Terraform
+        run: |
+          sudo apt-get update && sudo apt-get install -y gnupg software-properties-common curl
+          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+          sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+          sudo apt-get update && sudo apt-get install terraform=1.5.0
+
+      - name: Terraform Init
+        run: |
+          terraform init \
+          -backend-config="resource_group_name=myStorageResourceGroup" \
+          -backend-config="storage_account_name=terracount0203" \
+          -backend-config="container_name=tfstate" \
+          -backend-config="key=terraform.tfstate"
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        working-directory: terraform-project
+
+      - name: Terraform Apply
+        run: |
+          terraform apply -var="client_id=${{ secrets.AZURE_CLIENT_ID }}" \
+          -var="client_secret=${{ secrets.AZURE_CLIENT_SECRET }}" \
+          -var="tenant_id=${{ secrets.AZURE_TENANT_ID }}" \
+          -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
+          -auto-approve
+        working-directory: terraform-project
