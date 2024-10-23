@@ -3,7 +3,7 @@ name: Azure Terraform Deployment
 on:
   push:
     branches:
-      - main
+      - addingAKS
 
 jobs:
   terraform-deployment:
