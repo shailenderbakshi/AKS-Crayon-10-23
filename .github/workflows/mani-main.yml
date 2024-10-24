@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      resourceGroupName: 'myResourceGroup'  # Ensure this is your actual resource group
+      resourceGroupName: 'manifest-resource-group'  # Ensure this is your actual resource group
       aksClusterName: 'my-aks-cluster-dev'  # Ensure this is your actual AKS cluster name
       kubernetesNamespace: 'default'        # Namespace for Kubernetes deployments
 
