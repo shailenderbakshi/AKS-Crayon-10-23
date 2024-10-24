@@ -11,9 +11,9 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      resourceGroupName: 'manifest-resource-group'  # Ensure this is your actual resource group
-      aksClusterName: 'my-aks-cluster-dev'  # Ensure this is your actual AKS cluster name
-      kubernetesNamespace: 'default'        # Namespace for Kubernetes deployments
+      resourceGroupName: 'manifest-resource-group'  # Ensure this is your actual resource group name
+      aksClusterName: 'my-aks-cluster-dev'          # Ensure this is your actual AKS cluster name
+      kubernetesNamespace: 'default'                # Kubernetes namespace, change if necessary
 
     steps:
       - name: Checkout repository
@@ -54,7 +54,7 @@ jobs:
 
       - name: Terraform Apply
         run: |
-          terraform apply -var-file=env/dev.tfvars --auto-approve 
+          terraform apply -var-file=env/dev.tfvars --auto-approve
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
@@ -75,6 +75,10 @@ jobs:
           inlineScript: |
             az aks get-credentials --resource-group ${{ env.resourceGroupName }} --name ${{ env.aksClusterName }} --admin --overwrite-existing
 
+      # Verify if the AKS cluster connection is successful
+      - name: Verify AKS Cluster Connection
+        run: kubectl get nodes
+
       - name: Assign Cluster Admin Role
         run: |
           kubectl create clusterrolebinding shailender-cluster-admin-binding \
@@ -83,7 +87,7 @@ jobs:
 
       - name: Deploy NGINX to AKS
         run: |
-          kubectl apply -f terraform-project/manifests/nginx-deployment.yaml --namespace default --validate=false
+          kubectl apply -f terraform-project/manifests/nginx-deployment.yaml --namespace ${{ env.kubernetesNamespace }} --validate=false
 
       - name: Deploy Voting App to AKS
         run: |
