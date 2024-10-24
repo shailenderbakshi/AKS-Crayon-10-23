@@ -1,0 +1,85 @@
+name: AKS Deployment
+
+# Trigger the workflow only for pushes to the specific branch 'addingAKS'
+on:
+  push:
+    branches:
+      - withKubectlManifest
+
+jobs:
+  terraform-deployment:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: |
+            {
+              "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
+              "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
+              "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
+              "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
+            }
+
+      - name: Verify Subscription
+        run: az account show
+
+      # Setup Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: |
+          terraform init \
+          -backend-config="resource_group_name=myStorageResourceGroup" \
+          -backend-config="storage_account_name=terracount0203" \
+          -backend-config="container_name=tfstate" \
+          -backend-config="key=mani-aks-terraform.tfstate"
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
+        working-directory: terraform-project
+
+      - name: Terraform Apply
+        run: |
+          terraform apply -var-file=env/dev.tfvars --auto-approve 
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
+        working-directory: terraform-project
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+
+      - name: Get AKS Credentials
+        uses: azure/CLI@v1
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az aks get-credentials --resource-group ${{ env.resourceGroupName }} --name ${{ env.aksClusterName }} --admin --overwrite-existing
+
+      - name: Assign Cluster Admin Role
+        run: |
+          kubectl create clusterrolebinding shailender-cluster-admin-binding \
+            --clusterrole=cluster-admin \
+            --user=adm-shailender@crayonuk.tech || echo "Role binding may already exist"
+
+      - name: Deploy NGINX to AKS
+        run: |
+          kubectl apply -f terraform-project/manifests/nginx-deployment.yaml --namespace ${{ env.kubernetesNamespace }}
+
+      - name: Deploy Voting App to AKS
+        run: |
+          kubectl apply -f terraform-project/manifests/voting-app.yaml --namespace ${{ env.kubernetesNamespace }}
