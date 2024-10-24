@@ -1,6 +1,6 @@
-name: AKS Deployment
+name: AKS Mani Deployment
 
-# Trigger the workflow only for pushes to the specific branch 'addingAKS'
+# Trigger the workflow only for pushes to the specific branch 'withKubectlManifest'
 on:
   push:
     branches:
@@ -9,6 +9,11 @@ on:
 jobs:
   terraform-deployment:
     runs-on: ubuntu-latest
+
+    env:
+      resourceGroupName: 'myResourceGroup'  # Ensure this is your actual resource group
+      aksClusterName: 'my-aks-cluster-dev'  # Ensure this is your actual AKS cluster name
+      kubernetesNamespace: 'default'        # Namespace for Kubernetes deployments
 
     steps:
       - name: Checkout repository
