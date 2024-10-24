@@ -11,14 +11,16 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      resourceGroupName: 'manifest-resource-group'  # Ensure this is your actual resource group name
+      resourceGroupName: 'manifest-resource-group'  # Ensure this is your actual resource group
       aksClusterName: 'my-aks-cluster-dev'          # Ensure this is your actual AKS cluster name
-      kubernetesNamespace: 'default'                # Kubernetes namespace, change if necessary
+      kubernetesNamespace: 'default'                # Kubernetes namespace
 
     steps:
+      # Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # Azure login step
       - name: Azure Login
         uses: azure/login@v1
         with:
@@ -30,13 +32,15 @@ jobs:
               "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
             }
 
-      - name: Verify Subscription
+      # Verify Azure account after login
+      - name: Verify Azure Account
         run: az account show
 
       # Setup Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
+      # Initialize Terraform
       - name: Terraform Init
         run: |
           terraform init \
@@ -52,6 +56,7 @@ jobs:
           ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
         working-directory: terraform-project
 
+      # Apply Terraform changes
       - name: Terraform Apply
         run: |
           terraform apply -var-file=env/dev.tfvars --auto-approve
@@ -63,32 +68,43 @@ jobs:
           ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
         working-directory: terraform-project
 
+      # Install kubectl
       - name: Install kubectl
         uses: azure/setup-kubectl@v3
         with:
           version: 'latest'
 
+      # Get AKS credentials and print kubeconfig for debugging
       - name: Get AKS Credentials
         uses: azure/CLI@v1
         with:
           azcliversion: latest
           inlineScript: |
             az aks get-credentials --resource-group ${{ env.resourceGroupName }} --name ${{ env.aksClusterName }} --admin --overwrite-existing
+            echo "Kubeconfig set successfully"
+            cat ~/.kube/config
 
-      # Verify if the AKS cluster connection is successful
+      # Verify kubectl installation
+      - name: Verify kubectl Installation
+        run: kubectl version --client
+
+      # Verify AKS cluster connection
       - name: Verify AKS Cluster Connection
         run: kubectl get nodes
 
+      # Assign cluster admin role to the user
       - name: Assign Cluster Admin Role
         run: |
           kubectl create clusterrolebinding shailender-cluster-admin-binding \
             --clusterrole=cluster-admin \
             --user=adm-shailender@crayonuk.tech || echo "Role binding may already exist"
 
+      # Deploy NGINX to AKS
       - name: Deploy NGINX to AKS
         run: |
           kubectl apply -f terraform-project/manifests/nginx-deployment.yaml --namespace ${{ env.kubernetesNamespace }} --validate=false
 
+      # Deploy the Voting App to AKS
       - name: Deploy Voting App to AKS
         run: |
           kubectl apply -f terraform-project/manifests/voting-app.yaml --namespace ${{ env.kubernetesNamespace }}
