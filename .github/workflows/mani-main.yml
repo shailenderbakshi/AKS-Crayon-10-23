@@ -83,7 +83,7 @@ jobs:
 
       - name: Deploy NGINX to AKS
         run: |
-          kubectl apply -f terraform-project/manifests/nginx-deployment.yaml --namespace ${{ env.kubernetesNamespace }}
+          kubectl apply -f terraform-project/manifests/nginx-deployment.yaml --namespace default --validate=false
 
       - name: Deploy Voting App to AKS
         run: |
