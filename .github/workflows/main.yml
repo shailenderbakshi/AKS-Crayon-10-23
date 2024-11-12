@@ -33,9 +33,9 @@ jobs:
       - name: Terraform Init
         run: |
           terraform init \
-          -backend-config="resource_group_name=myStorageResourceGroup" \
+          -backend-config="resource_group_name=RG-Terraform" \
           -backend-config="storage_account_name=terracount0203" \
-          -backend-config="container_name=tfstate" \
+          -backend-config="container_name=tfstatecontainer" \
           -backend-config="key=terraform.tfstate"
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
