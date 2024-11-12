@@ -41,7 +41,7 @@ jobs:
         working-directory: terraform-project
 
       - name: Confirm Backend Configuration
-        run: echo "Using storage account: storterra01"
+        run: echo "Using storage account:storterra01"
 
       - name: Terraform Apply
         run: |
